@@ -180,7 +180,31 @@ export function roomAt(z: number, layout: ExhibitionLayout) {
     Math.min(layout.rooms.length - 1, Math.floor((8 - z) / ROOM_DEPTH)),
   );
 }
-/** Guided travel goes via the central aisle, never diagonally through partitions. */
+/** Check the entire segment against obstacles expanded by the visitor radius. */
+function clearSegment(from: Point, to: Point, layout: ExhibitionLayout) {
+  return !layout.obstacles.some((obstacle) => {
+    let enter = 0;
+    let leave = 1;
+    for (const [axis, center, extent] of [
+      [0, obstacle.x, obstacle.width / 2 + BODY_RADIUS],
+      [2, obstacle.z, obstacle.depth / 2 + BODY_RADIUS],
+    ]) {
+      const delta = to[axis] - from[axis];
+      if (Math.abs(delta) < 1e-10) {
+        if (Math.abs(from[axis] - center) > extent) return false;
+      } else {
+        const first = (center - extent - from[axis]) / delta;
+        const last = (center + extent - from[axis]) / delta;
+        enter = Math.max(enter, Math.min(first, last));
+        leave = Math.min(leave, Math.max(first, last));
+        if (enter > leave) return false;
+      }
+    }
+    return true;
+  });
+}
+
+/** Leave perimeter recesses before entering the central aisle and doorways. */
 export function guidedPath(
   from: Point,
   to: Point,
@@ -188,6 +212,16 @@ export function guidedPath(
 ): Point[] {
   const source = roomAt(from[2], layout),
     target = roomAt(to[2], layout);
-  if (source === target) return [to];
-  return [[0, EYE_HEIGHT, from[2]], [0, EYE_HEIGHT, to[2]], to];
+  if (source === target && clearSegment(from, to, layout)) return [to];
+  const center = layout.rooms[source].centerZ;
+  // Back-wall frames and side-wall frames leave a clear transverse aisle
+  // 1.1m inside each end. Moving longitudinally first escapes the recesses
+  // beside back-wall frames without cutting across their protruding edges.
+  const safeZ = Math.max(center - 5.9, Math.min(center + 5.9, from[2]));
+  return [
+    [from[0], EYE_HEIGHT, safeZ],
+    [0, EYE_HEIGHT, safeZ],
+    [0, EYE_HEIGHT, to[2]],
+    to,
+  ];
 }
