@@ -11,7 +11,7 @@ npm ci
 npm run dev
 ```
 
-The development server listens on port **3000** on all interfaces. Open port 3000 using your development environment's port forwarding, or visit `localhost:3000` on your own machine. No environment variables or API keys are needed. Fonts, geography and sample imagery are served locally. Optional music loads Spotify only when the visitor opens the player.
+The development server listens on port **3000** on all interfaces. Open port 3000 using your development environment's port forwarding, or visit `localhost:3000` on your own machine. No environment variables or API keys are needed. Fonts, geography and sample imagery are served locally. The 3D room automatically loads its optional Spotify player; 2D and studio previews load music on request.
 
 For a production preview:
 
@@ -72,7 +72,9 @@ Artist accounts, shared publishing, server database integration, recommendations
 
 Set `spotifyPlaylistUrl` on an artist record in `src/lib/data.ts` to that artist’s public Spotify playlist share URL (`https://open.spotify.com/playlist/…`). All eight artists have their supplied playlist assigned; empty or invalid values hide the music section. No Spotify API key, account integration, or backend is required. New contributors can choose a playlist for their own gallery in the studio. Existing artist playlists are read-only.
 
-The gallery shows a soundtrack panel in both 3D and 2D views. Visitors choose **Listen on Spotify** to load the official Spotify embed, then press play inside it. Closing the player or leaving the gallery removes the iframe and stops its playback; switching between 3D and 2D keeps it mounted. Playback availability, previews, sign-in and regional restrictions are controlled by Spotify. The direct playlist link remains available if the embedded player is blocked. No autoplay is requested.
+The 3D room includes a small soundtrack panel that loads the official Spotify embed when the room opens. An autoplay hint is sent, but Spotify playlist embeds do not guarantee automatic playback and browsers may require a visitor to press Play. **Stop music** removes the iframe to stop playback; **Listen on Spotify** reopens it. In 2D and studio previews, the player loads on request. Changing between 3D and 2D stops playback. Playback availability, previews, sign-in and regional restrictions are controlled by Spotify. The direct playlist link remains available if the embedded player is blocked.
+
+The room has a **Full screen** control that keeps navigation and music available. Browsers without the Fullscreen API use an expanded viewport layout; **Exit fullscreen** or Escape returns to the page. Artist information and the accessible catalogue remain available in compact expandable sections.
 
 Player tests validate URL handling, explicit loading, closing, keyboard access and mobile width with a mocked Spotify iframe. They do not verify real audio playback or Spotify account behaviour.
 

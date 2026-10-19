@@ -2,7 +2,7 @@
 import Icon from "./Icon";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Artist } from "@/lib/data";
 import SceneBoundary from "./SceneBoundary";
 import { useWebGL } from "./useMotion";
@@ -19,6 +19,48 @@ const GalleryRoom = dynamic(() => import("./GalleryRoom"), {
 });
 export default function Gallery({ artist }: { artist: Artist }) {
   const gl = useWebGL();
+  const viewer = useRef<HTMLDivElement>(null);
+  const fullscreenButton = useRef<HTMLButtonElement>(null);
+  const [expanded, setExpanded] = useState(false);
+  useEffect(() => {
+    const sync = () =>
+      setExpanded(document.fullscreenElement === viewer.current);
+    document.addEventListener("fullscreenchange", sync);
+    return () => document.removeEventListener("fullscreenchange", sync);
+  }, []);
+  useEffect(() => {
+    if (!expanded) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const escape = (event: KeyboardEvent) => {
+      if (
+        event.key === "Escape" &&
+        !document.fullscreenElement &&
+        !document.querySelector("dialog[open]")
+      ) {
+        setExpanded(false);
+        fullscreenButton.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", escape);
+    return () => {
+      document.body.style.overflow = previous;
+      window.removeEventListener("keydown", escape);
+    };
+  }, [expanded]);
+  const toggleFullscreen = async () => {
+    if (expanded) {
+      if (document.fullscreenElement) await document.exitFullscreen();
+      setExpanded(false);
+    } else {
+      setExpanded(true);
+      try {
+        await viewer.current?.requestFullscreen?.();
+      } catch {
+        /* Use the viewport-sized fallback. */
+      }
+    }
+  };
   const [twoD, setTwoD] = useState(false);
   const [selected, setSelected] = useState<number | null>(null);
   const [detail, setDetail] = useState<number | null>(null);
@@ -73,100 +115,125 @@ export default function Gallery({ artist }: { artist: Artist }) {
           WebGL is unavailable. Enjoy the complete exhibition in 2D.
         </p>
       )}
-      <aside className="entrance-introduction" aria-label="Artist introduction">
+      <details className="gallery-introduction">
+        <summary>About the artist · {artist.works.length} works</summary>
         <p>{artist.bio}</p>
-        <span>
-          {artist.works.length} works · {roomCount}{" "}
-          {roomCount === 1 ? "room" : "connected rooms"}
-        </span>
-      </aside>
-      {flat ? (
-        <section className="flat-gallery" aria-label="2D artwork collection">
-          {artist.works.length === 0 && (
-            <p className="empty-collection">
-              This collection is waiting for its first artwork.
-            </p>
-          )}
-          {artist.works.map((w, i) => (
-            <button
-              key={w.id}
-              className="flat-work"
-              onClick={() => setDetail(i)}
-            >
-              <span className="flat-image">
-                <img
-                  src={w.image}
-                  width={w.width}
-                  height={w.height}
-                  alt={w.title}
-                />
-              </span>
-              <span>{w.title}</span>
-              <small>
-                View artwork <Icon />
-              </small>
-            </button>
-          ))}
-        </section>
-      ) : (
-        <section className="room-section">
-          <div className="room-label">
-            THE PRIVATE VIEW{" "}
-            <span aria-live="polite">
-              Room {room + 1} of {roomCount}
-            </span>
-          </div>
-          <SceneBoundary fallback={fallback}>
-            {gl ? (
-              <GalleryRoom
-                artist={artist}
-                selected={selected}
-                onInspect={setDetail}
-                request={request}
-                exploring={exploring}
-                blocked={detail !== null}
-                input={input}
-                onRoomChange={(nextRoom) => {
-                  setRoom(nextRoom);
-                  setSceneReady(true);
-                }}
-              />
-            ) : (
-              <div className="scene-message">Preparing your exhibition…</div>
+      </details>
+      <div
+        ref={viewer}
+        className={`gallery-viewer ${expanded ? "is-expanded" : ""}`}
+      >
+        {flat ? (
+          <section className="flat-gallery" aria-label="2D artwork collection">
+            {artist.works.length === 0 && (
+              <p className="empty-collection">
+                This collection is waiting for its first artwork.
+              </p>
             )}
-          </SceneBoundary>
-          {exploring && <WalkPad input={input} disabled={detail !== null} />}
-          <p className={`room-hint ${exploring ? "walking-hint" : ""}`}>
-            {exploring
-              ? "Take your time. Drag to look around."
-              : "Select an artwork to look closer"}
-          </p>
-        </section>
-      )}
-      {!flat && (
-        <ExplorationControls
-          exploring={exploring}
-          onExplore={() => {
-            setExploring(true);
-            setRequest((n) => n + 1);
-          }}
-          input={input}
-          disabled={detail !== null || !sceneReady}
+            {artist.works.map((w, i) => (
+              <button
+                key={w.id}
+                className="flat-work"
+                onClick={() => setDetail(i)}
+              >
+                <span className="flat-image">
+                  <img
+                    src={w.image}
+                    width={w.width}
+                    height={w.height}
+                    alt={w.title}
+                  />
+                </span>
+                <span>{w.title}</span>
+                <small>
+                  View artwork <Icon />
+                </small>
+              </button>
+            ))}
+          </section>
+        ) : (
+          <section className="room-section">
+            <button
+              ref={fullscreenButton}
+              className="fullscreen-toggle"
+              onClick={toggleFullscreen}
+              aria-pressed={expanded}
+            >
+              {expanded ? "Exit fullscreen" : "Full screen"}
+            </button>
+            <GalleryMusic
+              compact
+              autoOpen
+              artistName={artist.name}
+              playlistUrl={artist.spotifyPlaylistUrl}
+            />
+            <div className="room-label">
+              THE PRIVATE VIEW{" "}
+              <span aria-live="polite">
+                Room {room + 1} of {roomCount}
+              </span>
+            </div>
+            <SceneBoundary fallback={fallback}>
+              {gl ? (
+                <GalleryRoom
+                  artist={artist}
+                  selected={selected}
+                  onInspect={setDetail}
+                  request={request}
+                  exploring={exploring}
+                  blocked={detail !== null}
+                  input={input}
+                  onRoomChange={(nextRoom) => {
+                    setRoom(nextRoom);
+                    setSceneReady(true);
+                  }}
+                />
+              ) : (
+                <div className="scene-message">Preparing your exhibition…</div>
+              )}
+            </SceneBoundary>
+            {exploring && <WalkPad input={input} disabled={detail !== null} />}
+            <p className={`room-hint ${exploring ? "walking-hint" : ""}`}>
+              {exploring
+                ? "Take your time. Drag to look around."
+                : "Select an artwork to look closer"}
+            </p>
+          </section>
+        )}
+        {!flat && (
+          <ExplorationControls
+            exploring={exploring}
+            onExplore={() => {
+              setExploring(true);
+              setRequest((n) => n + 1);
+            }}
+            input={input}
+            disabled={detail !== null || !sceneReady}
+          />
+        )}
+        {!flat && (
+          <GalleryControls
+            works={artist.works}
+            selected={selected}
+            onSelect={selectView}
+            onInspect={setDetail}
+          />
+        )}
+        {detail !== null && (
+          <ArtworkDetails
+            artist={artist}
+            work={artist.works[detail]}
+            onClose={() => setDetail(null)}
+          />
+        )}
+      </div>
+      {flat && (
+        <GalleryMusic
+          compact
+          artistName={artist.name}
+          playlistUrl={artist.spotifyPlaylistUrl}
         />
       )}
-      {!flat && (
-        <GalleryControls
-          works={artist.works}
-          selected={selected}
-          onSelect={selectView}
-          onInspect={setDetail}
-        />
-      )}
-      <GalleryMusic
-        key={artist.slug}
-        artistName={artist.name}
-        playlistUrl={artist.spotifyPlaylistUrl}
-      />
       <details className="artwork-catalogue">
         <summary>Artwork titles &amp; labels</summary>
         <ol>
@@ -181,26 +248,11 @@ export default function Gallery({ artist }: { artist: Artist }) {
           ))}
         </ol>
       </details>
-      <section className="artist-about">
-        <p className="eyebrow">BEHIND THE COLLECTION</p>
-        <p>{artist.bio}</p>
-        <small>
-          {artist.works.length} works · Explore the artwork titles and labels
-          above.
-        </small>
-      </section>
       <footer>
         <Link href="/">← A world of art awaits</Link>
         <Link href="/studio">Add your pin &amp; artwork</Link>
         <a href="/ATTRIBUTION.txt">Credits & image licences</a>
       </footer>
-      {detail !== null && (
-        <ArtworkDetails
-          artist={artist}
-          work={artist.works[detail]}
-          onClose={() => setDetail(null)}
-        />
-      )}
     </main>
   );
 }

@@ -1,0 +1,55 @@
+import { test, expect } from "@playwright/test";
+
+for (const width of [1440, 390]) {
+  test(`compact room, music and fullscreen at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.route("https://open.spotify.com/embed/**", (route) =>
+      route.fulfill({
+        contentType: "text/html",
+        body: "<button>Play</button>",
+      }),
+    );
+    await page.goto("/gallery/elia-monroe");
+    await expect(page.locator(".artist-about")).toHaveCount(0);
+    const room = page.locator(".room-section");
+    await expect(room.locator("iframe")).toBeVisible();
+    await room.getByRole("button", { name: "Stop music" }).click();
+    await expect(room.locator("iframe")).toHaveCount(0);
+    await room.getByRole("button", { name: "Listen on Spotify" }).click();
+    await expect(room.locator("iframe")).toBeVisible();
+    const reset = page.getByRole("button", { name: "Reset view" });
+    await expect(reset).toBeInViewport();
+    await room
+      .getByRole("button", { name: "Full screen", exact: true })
+      .click();
+    await expect(page.locator(".gallery-viewer")).toHaveClass(/is-expanded/);
+    await expect(reset).toBeInViewport();
+    await page
+      .getByRole("button", { name: "View artwork", exact: true })
+      .click();
+    await expect(page.getByRole("dialog")).toBeVisible();
+    await page.getByRole("button", { name: "Close artwork details" }).click();
+    await page.screenshot({ path: `/tmp/room-fullscreen-${width}.png` });
+    await page.getByRole("button", { name: "Exit fullscreen" }).click();
+    await expect(page.locator(".gallery-viewer")).not.toHaveClass(
+      /is-expanded/,
+    );
+    // Browsers without Fullscreen API still get an expanded room with Escape exit.
+    await page.evaluate(() => {
+      HTMLElement.prototype.requestFullscreen = undefined as never;
+    });
+    await page
+      .getByRole("button", { name: "Full screen", exact: true })
+      .click();
+    await expect(page.locator(".gallery-viewer")).toHaveClass(/is-expanded/);
+    await page.keyboard.press("Escape");
+    await expect(page.locator(".gallery-viewer")).not.toHaveClass(
+      /is-expanded/,
+    );
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+  });
+}
