@@ -150,7 +150,7 @@ test("direct gallery URLs, mobile layout and accessible details", async ({
     ),
   ).toBeTruthy();
 });
-test("WebGL unavailable: artist menu and complete 2D collection still work", async ({
+test("WebGL unavailable: fallback links and complete 2D collection still work", async ({
   page,
 }) => {
   await page.addInitScript(() => {
@@ -158,7 +158,6 @@ test("WebGL unavailable: artist menu and complete 2D collection still work", asy
       null) as typeof HTMLCanvasElement.prototype.getContext;
   });
   await page.goto("/");
-  await page.locator(".artist-menu summary").click();
   await page
     .getByRole("navigation", { name: "Choose an artist" })
     .getByRole("link")

@@ -24,9 +24,7 @@ export default function GalleryMusic({
     >
       <div className="music-heading">
         <div>
-          <p className="eyebrow">
-            {compact ? "ROOM SOUNDTRACK" : "A SOUNDTRACK FOR YOUR VISIT"}
-          </p>
+          <p className="eyebrow">{compact ? "SPOTIFY" : "SOUNDTRACK"}</p>
           <p className="music-credit">
             {compact ? (
               <a
@@ -35,7 +33,7 @@ export default function GalleryMusic({
                 rel="noopener noreferrer"
                 aria-label="Open playlist in Spotify"
               >
-                {artistName} ↗
+                {artistName} <Icon />
               </a>
             ) : (
               <>Selected by {artistName}</>
@@ -43,17 +41,15 @@ export default function GalleryMusic({
           </p>
         </div>
         <button
-          className="text-button"
+          className="text-button icon-button"
+          aria-label={open ? "Stop music" : "Listen on Spotify"}
+          title={open ? "Stop music" : "Play playlist"}
           type="button"
           aria-expanded={open}
           aria-controls="gallery-playlist"
           onClick={() => setOpen(!open)}
         >
-          {open
-            ? autoOpen
-              ? "Stop music"
-              : "Close player"
-            : "Listen on Spotify"}
+          <Icon kind={open ? "stop" : "play"} />
         </button>
       </div>
       {open && (

@@ -90,22 +90,21 @@ export default function Gallery({ artist }: { artist: Artist }) {
           Atelier Atlas
         </Link>
         <button
-          className="text-button"
+          className="text-button icon-button"
+          aria-label={flat ? "Switch to 3D" : "View in 2D"}
+          title={flat ? "Switch to 3D" : "View in 2D"}
           onClick={() => {
             setTwoD(!twoD);
             setSceneReady(false);
           }}
           disabled={gl === false}
         >
-          {flat ? "Switch to 3D" : "View in 2D"}{" "}
-          <span aria-hidden>
-            <Icon />
-          </span>
+          <Icon kind={flat ? "cube" : "grid"} />
         </button>
       </nav>
       <header className="gallery-heading">
         <p className="eyebrow">
-          {artist.city}, {artist.country} <span> / </span> AN ARTIST EXHIBITION
+          {artist.city}, {artist.country}
         </p>
         <h1>{artist.name}</h1>
         <p>{artist.discipline}</p>
@@ -155,11 +154,13 @@ export default function Gallery({ artist }: { artist: Artist }) {
           <section className="room-section">
             <button
               ref={fullscreenButton}
-              className="fullscreen-toggle"
+              className="fullscreen-toggle icon-button"
+              aria-label={expanded ? "Exit fullscreen" : "Full screen"}
+              title={expanded ? "Exit fullscreen" : "Full screen"}
               onClick={toggleFullscreen}
               aria-pressed={expanded}
             >
-              {expanded ? "Exit fullscreen" : "Full screen"}
+              <Icon kind={expanded ? "collapse" : "expand"} />
             </button>
             <GalleryMusic
               compact
@@ -168,7 +169,6 @@ export default function Gallery({ artist }: { artist: Artist }) {
               playlistUrl={artist.spotifyPlaylistUrl}
             />
             <div className="room-label">
-              THE PRIVATE VIEW{" "}
               <span aria-live="polite">
                 Room {room + 1} of {roomCount}
               </span>
@@ -193,11 +193,6 @@ export default function Gallery({ artist }: { artist: Artist }) {
               )}
             </SceneBoundary>
             {exploring && <WalkPad input={input} disabled={detail !== null} />}
-            <p className={`room-hint ${exploring ? "walking-hint" : ""}`}>
-              {exploring
-                ? "Take your time. Drag to look around."
-                : "Select an artwork to look closer"}
-            </p>
           </section>
         )}
         {!flat && (

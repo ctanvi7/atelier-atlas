@@ -18,26 +18,23 @@ export default function Landing() {
   const { galleries, error } = useLocalGalleries();
   const artists = [...featuredArtists, ...galleries];
   const [paused, setPaused] = useState(false);
+  const fallback = (
+    <div className="scene-message">
+      <p>Choose a gallery</p>
+      <nav className="fallback-artists" aria-label="Choose an artist">
+        {artists.map((artist) => (
+          <Link key={artist.slug} href={galleryHref(artist)}>
+            {artist.name}
+            <small>{artist.city}</small>
+          </Link>
+        ))}
+      </nav>
+    </div>
+  );
   return (
     <main className="landing">
       <nav className="topbar">
         <span className="small-caps">Independent art. Without borders.</span>
-        <details className="artist-menu">
-          <summary>
-            Explore artists{" "}
-            <span aria-hidden>
-              <Icon />
-            </span>
-          </summary>
-          <nav aria-label="Choose an artist">
-            {artists.map((artist) => (
-              <Link key={artist.slug} href={galleryHref(artist)}>
-                {artist.name}
-                <small>{artist.city}</small>
-              </Link>
-            ))}
-          </nav>
-        </details>
       </nav>
       <header className="hero-heading">
         <p className="eyebrow">A NEW PERSPECTIVE ON ART</p>
@@ -59,20 +56,9 @@ export default function Landing() {
           </p>
         </div>
         <div className="globe-stage">
-          <SceneBoundary
-            fallback={
-              <div className="scene-message">
-                The globe couldn’t load. Choose a gallery from Explore artists
-                above.
-              </div>
-            }
-          >
+          <SceneBoundary fallback={fallback}>
             {gl === false ? (
-              <div className="scene-message">
-                Choose a gallery from Explore artists above.
-                <br />
-                <small>3D is unavailable on this device.</small>
-              </div>
+              fallback
             ) : gl === true ? (
               <Globe paused={paused} artists={artists} />
             ) : (
@@ -97,11 +83,12 @@ export default function Landing() {
         </p>
         {gl && (
           <button
-            className="text-button pause"
+            className="text-button pause icon-button"
+            aria-label={paused ? "Resume rotation" : "Pause rotation"}
+            title={paused ? "Resume rotation" : "Pause rotation"}
             onClick={() => setPaused(!paused)}
           >
-            {!paused && <Icon kind="pause" />}
-            {paused ? "Resume rotation" : "Pause rotation"}
+            <Icon kind={paused ? "play" : "pause"} />
           </button>
         )}
       </section>
@@ -109,7 +96,7 @@ export default function Landing() {
         <Link className="studio-primary" href="/studio">
           Add your pin & artwork
         </Link>
-        <p>Make a place for your art on the atlas.</p>
+
         {error && <p role="status">{error}</p>}
       </div>
       <footer>

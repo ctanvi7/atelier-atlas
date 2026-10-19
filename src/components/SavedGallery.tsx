@@ -25,10 +25,5 @@ export default function SavedGallery({ slug }: { slug: string }) {
         </p>
       </main>
     );
-  return (
-    <>
-      <p className="draft-notice">Your gallery · saved in this browser only</p>
-      <Gallery key={revision} artist={artist} />
-    </>
-  );
+  return <Gallery key={revision} artist={artist} />;
 }

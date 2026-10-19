@@ -86,7 +86,7 @@ for (const width of [1440, 390]) {
       path: `/tmp/atelier-music-${width}.png`,
       fullPage: true,
     });
-    await page.getByRole("button", { name: "Close player" }).click();
+    await page.getByRole("button", { name: "Stop music" }).click();
     await expect(page.locator("iframe")).toHaveCount(0);
     await page.goto("/__music-fixture");
     await expect(
@@ -105,11 +105,8 @@ test("homepage omits the large directory and keeps accessible gallery navigation
   await expect(page.locator(".artist-directory, .landing-divider")).toHaveCount(
     0,
   );
-  await page.locator(".artist-menu summary").focus();
-  await page.keyboard.press("Enter");
-  await expect(
-    page
-      .getByRole("navigation", { name: "Choose an artist" })
-      .getByRole("link"),
-  ).toHaveCount(8);
+  await expect(page.locator(".artist-menu")).toHaveCount(0);
+  await expect(page.getByText("Explore artists", { exact: true })).toHaveCount(
+    0,
+  );
 });
