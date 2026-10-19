@@ -6,19 +6,41 @@ import { spotifyPlaylist } from "@/lib/spotify";
 export default function GalleryMusic({
   artistName,
   playlistUrl,
+  compact = false,
+  autoOpen = false,
 }: {
   artistName: string;
   playlistUrl?: string;
+  compact?: boolean;
+  autoOpen?: boolean;
 }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(autoOpen);
   const playlist = spotifyPlaylist(playlistUrl);
   if (!playlist) return null;
   return (
-    <section className="gallery-music" aria-label="Gallery soundtrack">
+    <section
+      className={`gallery-music ${compact ? "music-compact" : ""}`}
+      aria-label="Gallery soundtrack"
+    >
       <div className="music-heading">
         <div>
-          <p className="eyebrow">A SOUNDTRACK FOR YOUR VISIT</p>
-          <p className="music-credit">Selected by {artistName}</p>
+          <p className="eyebrow">
+            {compact ? "ROOM SOUNDTRACK" : "A SOUNDTRACK FOR YOUR VISIT"}
+          </p>
+          <p className="music-credit">
+            {compact ? (
+              <a
+                href={playlist.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Open playlist in Spotify"
+              >
+                {artistName} ↗
+              </a>
+            ) : (
+              <>Selected by {artistName}</>
+            )}
+          </p>
         </div>
         <button
           className="text-button"
@@ -27,16 +49,22 @@ export default function GalleryMusic({
           aria-controls="gallery-playlist"
           onClick={() => setOpen(!open)}
         >
-          {open ? "Close player" : "Listen on Spotify"}
+          {open
+            ? autoOpen
+              ? "Stop music"
+              : "Close player"
+            : "Listen on Spotify"}
         </button>
       </div>
       {open && (
         <div id="gallery-playlist">
           <iframe
-            src={playlist.embedUrl}
+            src={
+              autoOpen ? `${playlist.embedUrl}&autoplay=1` : playlist.embedUrl
+            }
             title={`${artistName}’s Spotify playlist`}
             width="100%"
-            height="352"
+            height={compact ? "80" : "352"}
             allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
             allowFullScreen
             referrerPolicy="strict-origin-when-cross-origin"
