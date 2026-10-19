@@ -1,0 +1,900 @@
+:root {
+  --cream: #f5f0e7;
+  --ink: #191714;
+  --muted: #756c5e;
+  --gold: #a3834c;
+  --line: #dcd3c3;
+}
+* {
+  box-sizing: border-box;
+}
+html {
+  scroll-behavior: smooth;
+}
+body {
+  margin: 0;
+  background: var(--cream);
+  color: var(--ink);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+}
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+button:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid #88692f;
+  outline-offset: 6px;
+}
+button {
+  border: 1px solid var(--line);
+  background: transparent;
+  padding: 10px 16px;
+}
+a:hover {
+  color: #8c6b38;
+}
+h1,
+h2,
+p {
+  margin: 0;
+}
+h1,
+h2 {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-weight: 400;
+}
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 29px 4.5%;
+  font-size: 11px;
+}
+.topbar a {
+  border-bottom: 1px solid #b8aa94;
+  padding-bottom: 6px;
+}
+.topbar a span {
+  margin-left: 25px;
+}
+.small-caps {
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 9px;
+  color: var(--muted);
+}
+.hero-heading {
+  text-align: center;
+  padding-top: 38px;
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
+}
+.eyebrow {
+  font-size: 9px;
+  letter-spacing: 2.2px;
+  font-weight: 400;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.wordmark {
+  font-family: Parisienne, cursive;
+  font-size: clamp(68px, 7.6vw, 110px);
+  line-height: 1.3;
+  margin: 8px 0 0;
+  font-weight: 400;
+}
+.tagline {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 21px;
+  color: #6f6658;
+  margin-top: 2px;
+}
+.globe-section {
+  position: relative;
+  max-width: 1300px;
+  margin: -10px auto -12px;
+}
+.globe-stage {
+  height: clamp(370px, 43vw, 550px);
+  width: 100%;
+  position: relative;
+  touch-action: none;
+}
+.globe-stage:after {
+  content: "";
+  position: absolute;
+  bottom: 7%;
+  left: 39%;
+  width: 22%;
+  height: 3%;
+  background: #9b8866;
+  border-radius: 50%;
+  filter: blur(24px);
+  opacity: 0.2;
+  pointer-events: none;
+}
+.globe-stage canvas {
+  position: relative;
+  z-index: 1;
+}
+.globe-annotation {
+  position: absolute;
+  top: 43%;
+  font-family: "Cormorant Garamond", serif;
+  font-style: italic;
+  font-size: 18px;
+  line-height: 1.5;
+  color: #8c806d;
+  z-index: 0;
+}
+.left-note {
+  left: 10%;
+}
+.right-note {
+  right: 10%;
+}
+.tiny-star {
+  font-size: 25px;
+  display: block;
+  margin-bottom: 16px;
+  color: var(--gold);
+}
+.gold-dot {
+  height: 5px;
+  width: 5px;
+  background: var(--gold);
+  display: block;
+  border-radius: 50%;
+  margin-bottom: 20px;
+}
+.globe-caption {
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+.globe-caption h2 {
+  font-size: 29px;
+}
+.globe-caption p {
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.6px;
+  margin: 12px 0;
+}
+.globe-caption p span {
+  padding: 0 10px;
+}
+.text-button {
+  border: 0;
+  padding: 8px 0;
+  background: none;
+}
+.pause {
+  font-size: 10px;
+  color: #89795e;
+}
+.landing-divider {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1120px;
+  margin: 36px auto 0;
+  border-top: 1px solid var(--line);
+  padding: 23px 0;
+  color: var(--muted);
+  font-size: 8px;
+  letter-spacing: 2px;
+}
+.landing-divider a {
+  font-size: 21px;
+}
+.artist-directory {
+  max-width: 1050px;
+  margin: 65px auto 75px;
+  scroll-margin-top: 35px;
+}
+.section-intro {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 35px;
+}
+.section-intro h2 {
+  font-size: 40px;
+  margin-top: 10px;
+}
+.section-intro > p {
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+.artist-row {
+  display: flex;
+  align-items: center;
+  border-top: 1px solid var(--line);
+  padding: 22px 4px;
+  gap: 30px;
+  transition: padding 0.2s;
+}
+.artist-row:hover {
+  padding-left: 14px;
+}
+.artist-row:last-child {
+  border-bottom: 1px solid var(--line);
+}
+.artist-number {
+  font-size: 10px;
+  color: var(--gold);
+}
+.artist-name {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 29px;
+  flex: 1;
+}
+.artist-name small {
+  display: block;
+  font-family: Arial, sans-serif;
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 7px;
+}
+.artist-city {
+  font-size: 11px;
+  color: var(--muted);
+}
+.row-arrow {
+  margin-left: 40px;
+  font-size: 20px;
+  color: var(--gold);
+}
+.sample-note {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 25px;
+  line-height: 1.8;
+}
+footer {
+  border-top: 1px solid var(--line);
+  padding: 30px 4.5%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--muted);
+  gap: 20px;
+}
+.footer-logo {
+  font-family: Parisienne, cursive;
+  font-size: 30px;
+  color: var(--ink);
+}
+.scene-message {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  color: var(--muted);
+  font-family: "Cormorant Garamond", serif;
+  font-size: 24px;
+  padding: 30px;
+  gap: 16px;
+}
+.scene-message small {
+  font:
+    11px Arial,
+    sans-serif;
+}
+.map-pin {
+  padding: 10px;
+  width: 35px;
+  height: 35px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  display: grid;
+  place-items: center;
+}
+.map-pin span {
+  width: 10px;
+  height: 10px;
+  background: #a5803e;
+  border: 2px solid #ead9b0;
+  border-radius: 50%;
+  box-shadow: 0 1px 5px #6e512c66;
+  transition: transform 0.2s;
+}
+.map-pin:hover span,
+.map-pin:focus-visible span {
+  transform: scale(1.5);
+}
+.pin-container {
+  position: relative;
+}
+.pin-tooltip {
+  display: none;
+  position: absolute;
+  bottom: 39px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  background: #faf7f0f5;
+  padding: 12px 16px;
+  box-shadow: 0 4px 20px #39302012;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 19px;
+  pointer-events: none;
+  text-align: center;
+}
+.pin-tooltip small {
+  display: block;
+  font:
+    9px Arial,
+    sans-serif;
+  margin-top: 5px;
+  letter-spacing: 1px;
+  color: var(--muted);
+}
+.map-pin:hover + .pin-tooltip,
+.map-pin:focus + .pin-tooltip {
+  display: block;
+}
+.pin-selection {
+  position: absolute;
+  top: 35px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #faf7f0;
+  width: 230px;
+  padding: 20px;
+  box-shadow: 0 10px 50px #372b2526;
+  border: 1px solid var(--line);
+}
+.pin-selection a {
+  display: block;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+  font-family: "Cormorant Garamond", serif;
+  font-size: 23px;
+}
+.pin-selection a span {
+  display: block;
+  font:
+    9px Arial,
+    sans-serif;
+  margin-top: 6px;
+  color: var(--gold);
+}
+.pin-selection .text-button {
+  font-size: 10px;
+  margin-top: 10px;
+}
+.gallery-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 4%;
+  border-bottom: 1px solid var(--line);
+  font-size: 11px;
+}
+.gallery-heading {
+  text-align: center;
+  padding: 34px 20px 28px;
+}
+.gallery-heading h1 {
+  font-size: 56px;
+  line-height: 1.2;
+  margin: 8px 0;
+}
+.gallery-heading > p:last-child {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 20px;
+  color: var(--muted);
+}
+.gallery-heading .eyebrow span {
+  margin: 0 12px;
+  color: #b8a784;
+}
+.room-section {
+  height: clamp(400px, 57vw, 640px);
+  margin: 0 3%;
+  position: relative;
+  background: #e8dfd0;
+  overflow: hidden;
+}
+.room-label {
+  position: absolute;
+  top: 23px;
+  left: 26px;
+  z-index: 1;
+  letter-spacing: 2px;
+  font-size: 8px;
+  color: #6e604e;
+  pointer-events: none;
+}
+.room-label span {
+  margin-left: 20px;
+}
+.room-hint {
+  position: absolute;
+  bottom: 20px;
+  width: 100%;
+  text-align: center;
+  pointer-events: none;
+  font-size: 10px;
+  color: #fff8ec;
+  text-shadow: 0 1px 5px #59472e;
+}
+.gallery-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 24px 20px;
+  border-bottom: 1px solid var(--line);
+  max-width: 1000px;
+  margin: auto;
+}
+.gallery-controls > button:first-child,
+.gallery-controls > button:nth-child(3) {
+  border-radius: 50%;
+  height: 42px;
+  width: 42px;
+  padding: 0;
+  font-size: 20px;
+}
+.current-work {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 230px;
+  text-align: center;
+}
+.current-work > span:last-child {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 23px;
+}
+.control-divider {
+  width: 1px;
+  height: 35px;
+  background: var(--line);
+}
+.inspect-button {
+  background: var(--ink);
+  color: var(--cream);
+  border-color: var(--ink);
+  font-size: 11px;
+}
+.reset-button {
+  border: 0;
+  font-size: 11px;
+  color: var(--muted);
+}
+.artist-about {
+  max-width: 600px;
+  margin: 55px auto;
+  text-align: center;
+  padding: 0 24px;
+}
+.artist-about > p:nth-child(2) {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 25px;
+  line-height: 1.5;
+  margin: 13px 0 20px;
+}
+.artist-about small {
+  font-size: 9px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+.flat-gallery {
+  max-width: 1100px;
+  margin: 20px auto 40px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 48px 35px;
+  padding: 0 25px;
+}
+.flat-work {
+  border: 0;
+  padding: 0;
+  text-align: left;
+}
+.flat-image {
+  height: 310px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eae2d5;
+  padding: 30px;
+}
+.flat-image img {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  border: 7px ridge #b49156;
+  box-shadow: 4px 7px 14px #59442730;
+}
+.flat-work > span:nth-child(2) {
+  display: block;
+  font:
+    25px "Cormorant Garamond",
+    serif;
+  margin: 15px 0 5px;
+}
+.flat-work small {
+  color: var(--muted);
+  font-size: 10px;
+}
+.fallback-note {
+  text-align: center;
+  margin-bottom: 25px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.art-dialog {
+  border: 1px solid var(--line);
+  background: var(--cream);
+  color: var(--ink);
+  padding: 0;
+  width: min(1000px, 92vw);
+  max-height: 90dvh;
+  overflow: auto;
+}
+.art-dialog[open] {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+}
+.art-dialog::backdrop {
+  background: #242018b8;
+  backdrop-filter: blur(5px);
+}
+.dialog-close {
+  position: absolute;
+  right: 15px;
+  top: 12px;
+  z-index: 1;
+  background: var(--cream);
+  font-size: 25px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  padding: 0;
+}
+.detail-image {
+  padding: 45px;
+  background: #e8dfd0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 450px;
+}
+.detail-image img {
+  max-width: 100%;
+  max-height: 65vh;
+  object-fit: contain;
+  width: auto;
+  height: auto;
+  box-shadow: 0 5px 25px #57442c25;
+}
+.detail-copy {
+  padding: 75px 40px 40px;
+  align-self: center;
+}
+.detail-copy h2 {
+  font-size: 42px;
+  margin: 15px 0 8px;
+  line-height: 1.1;
+}
+.detail-copy > p:not(.eyebrow) {
+  font-size: 12px;
+  line-height: 1.9;
+  color: var(--muted);
+  margin: 25px 0;
+}
+.detail-copy .detail-artist {
+  font-size: 18px !important;
+  font-family: "Cormorant Garamond", serif;
+}
+.detail-copy .medium {
+  font-size: 10px !important;
+  border-top: 1px solid var(--line);
+  padding-top: 20px;
+}
+@media (min-width: 1500px) {
+  .hero-heading {
+    padding-top: 50px;
+  }
+  .globe-stage {
+    height: 580px;
+  }
+}
+@media (max-width: 1000px) {
+  .artist-directory,
+  .landing-divider {
+    margin-left: 6%;
+    margin-right: 6%;
+  }
+  .left-note {
+    left: 5%;
+  }
+  .right-note {
+    right: 5%;
+  }
+  .globe-annotation {
+    font-size: 15px;
+  }
+  .gallery-controls {
+    gap: 12px;
+  }
+  .current-work {
+    min-width: 190px;
+  }
+  .flat-gallery {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 600px) {
+  .topbar {
+    padding: 22px 6%;
+  }
+  .topbar .small-caps {
+    font-size: 7px;
+    letter-spacing: 1px;
+    max-width: 120px;
+    line-height: 1.8;
+  }
+  .topbar a {
+    font-size: 10px;
+  }
+  .topbar a span {
+    margin-left: 10px;
+  }
+  .hero-heading {
+    padding-top: 35px;
+  }
+  .eyebrow {
+    font-size: 8px;
+    letter-spacing: 1.8px;
+  }
+  .wordmark {
+    font-size: 58px;
+    margin-top: 12px;
+  }
+  .tagline {
+    font-size: 19px;
+  }
+  .globe-stage {
+    height: 380px;
+  }
+  .globe-section {
+    margin: 0 auto -4px;
+  }
+  .globe-annotation {
+    display: none;
+  }
+  .globe-caption h2 {
+    font-size: 25px;
+  }
+  .globe-caption p {
+    font-size: 9px;
+    letter-spacing: 0;
+  }
+  .globe-caption p span {
+    padding: 0 5px;
+  }
+  .landing-divider {
+    margin-top: 25px;
+    font-size: 6px;
+    letter-spacing: 1px;
+  }
+  .artist-directory {
+    margin-top: 45px;
+    margin-bottom: 45px;
+  }
+  .section-intro {
+    display: block;
+  }
+  .section-intro h2 {
+    font-size: 34px;
+  }
+  .section-intro > p {
+    margin-top: 16px;
+    font-size: 11px;
+  }
+  .artist-row {
+    gap: 15px;
+    flex-wrap: wrap;
+    padding: 20px 0;
+  }
+  .artist-name {
+    font-size: 25px;
+  }
+  .artist-name small {
+    font-size: 9px;
+  }
+  .artist-city {
+    font-size: 9px;
+    max-width: 74px;
+    line-height: 1.5;
+  }
+  .row-arrow {
+    margin-left: 0;
+  }
+  .artist-number {
+    font-size: 8px;
+  }
+  .sample-note {
+    font-size: 9px;
+  }
+  footer {
+    flex-wrap: wrap;
+    padding: 25px 6%;
+    font-size: 9px;
+  }
+  footer .footer-logo {
+    width: 100%;
+  }
+  .gallery-nav {
+    padding: 18px 5%;
+    font-size: 10px;
+  }
+  .gallery-nav .footer-logo {
+    font-size: 24px;
+  }
+  .gallery-nav button {
+    font-size: 10px;
+  }
+  .gallery-heading {
+    padding: 28px 12px 24px;
+  }
+  .gallery-heading h1 {
+    font-size: 43px;
+  }
+  .gallery-heading .eyebrow {
+    font-size: 7px;
+    letter-spacing: 1px;
+  }
+  .gallery-heading .eyebrow span {
+    margin: 0 5px;
+  }
+  .room-section {
+    height: 440px;
+    margin: 0 12px;
+  }
+  .room-label {
+    top: 16px;
+    left: 16px;
+    font-size: 7px;
+  }
+  .gallery-controls {
+    flex-wrap: wrap;
+    gap: 13px 16px;
+    padding: 20px 12px;
+  }
+  .current-work {
+    min-width: 220px;
+  }
+  .control-divider {
+    display: none;
+  }
+  .gallery-controls .inspect-button {
+    margin-left: 65px;
+  }
+  .reset-button {
+    margin-right: 50px;
+  }
+  .flat-gallery {
+    gap: 30px 20px;
+    padding: 0 20px;
+  }
+  .flat-image {
+    height: 225px;
+    padding: 18px;
+  }
+  .flat-work > span:nth-child(2) {
+    font-size: 22px;
+  }
+  .art-dialog[open] {
+    display: block;
+  }
+  .detail-image {
+    min-height: 0;
+    padding: 40px 30px 30px;
+  }
+  .detail-image img {
+    max-height: 40vh;
+  }
+  .detail-copy {
+    padding: 28px;
+  }
+  .detail-copy h2 {
+    font-size: 35px;
+  }
+  .detail-copy > p:not(.eyebrow) {
+    margin: 16px 0;
+  }
+  .artist-about {
+    margin: 35px auto;
+  }
+  .artist-about > p:nth-child(2) {
+    font-size: 23px;
+  }
+}
+@media (max-width: 370px) {
+  .wordmark {
+    font-size: 53px;
+  }
+  .current-work {
+    min-width: 180px;
+  }
+  .gallery-controls .inspect-button {
+    margin-left: 30px;
+  }
+  .reset-button {
+    margin-right: 30px;
+  }
+  .flat-gallery {
+    grid-template-columns: 1fr;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *:before,
+  *:after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+.icon {
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+.pause .icon {
+  height: 11px;
+  margin-right: 5px;
+}
+.flat-work .icon,
+.pin-selection .icon,
+.inspect-button .icon {
+  width: 12px;
+  height: 12px;
+  margin-left: 5px;
+}
+.texture-loading {
+  display: block;
+  white-space: nowrap;
+  font:
+    16px "Cormorant Garamond",
+    serif;
+  background: #f5f0e7e8;
+  padding: 16px 22px;
+  color: #756c5e;
+}
+.texture-loading-overlay {
+  pointer-events: none;
+  background: #f5f0e790;
+  z-index: 2;
+}

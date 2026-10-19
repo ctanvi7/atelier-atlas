@@ -1,0 +1,16 @@
+Atelier Atlas — demonstration collection
+
+All artist identities, biographies and artwork titles are fictional.
+All sample artwork SVGs in /art were created for this project and are released under CC0 1.0 (public domain dedication): https://creativecommons.org/publicdomain/zero/1.0/
+
+Geography: Natural Earth, public domain, 1:110m land outlines.
+https://www.naturalearthdata.com/about/terms-of-use/
+Distributed as world-atlas v2 land-110m.json by Mike Bostock, ISC licence.
+https://github.com/topojson/world-atlas
+Copyright 2013-2019 Mike Bostock
+Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted, provided that the above copyright notice and this permission notice appear in all copies.
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+Fonts: Parisienne by Astigmatic; Cormorant Garamond by Christian Thalmann. SIL Open Font License 1.1. Self-hosted using Fontsource packages; full licences are included in those packages.
+Font licence copies: /licences/parisienne.txt and /licences/cormorant-garamond.txt.
+The original oak floor illustration in /materials is also released under CC0 1.0.
