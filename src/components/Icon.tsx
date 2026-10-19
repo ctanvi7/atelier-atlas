@@ -13,6 +13,7 @@ export default function Icon({
     | "eye"
     | "walk"
     | "grid"
+    | "music"
     | "cube";
 }) {
   return (
@@ -29,6 +30,8 @@ export default function Icon({
       <path
         d={
           {
+            music:
+              "M9 18V5l11-2v13M9 8l11-2M9 18a3 2 0 1 1-3-2 3 2 0 0 1 3 2m11-2a3 2 0 1 1-3-2 3 2 0 0 1 3 2",
             arrow: "M5 19 19 5M5 5h14v14",
             pause: "M9 5v14M15 5v14",
             star: "m12 2 2.5 7.5L22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5Z",

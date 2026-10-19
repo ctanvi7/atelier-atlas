@@ -61,7 +61,7 @@ for (const width of [1440, 390]) {
     await page.goto(
       `/__music-fixture?playlist=${encodeURIComponent(playlistUrl)}`,
     );
-    const open = page.getByRole("button", { name: "Listen on Spotify" });
+    const open = page.getByRole("button", { name: "Open Spotify player" });
     await expect(open).toBeVisible();
     await expect(page.locator("iframe")).toHaveCount(0);
     expect(requests).toBe(0);

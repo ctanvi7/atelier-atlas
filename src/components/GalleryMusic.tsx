@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useId, useState } from "react";
 import Icon from "./Icon";
 import { spotifyPlaylist } from "@/lib/spotify";
 
@@ -15,6 +15,7 @@ export default function GalleryMusic({
   autoOpen?: boolean;
 }) {
   const [open, setOpen] = useState(autoOpen);
+  const playerId = useId();
   const playlist = spotifyPlaylist(playlistUrl);
   if (!playlist) return null;
   return (
@@ -25,54 +26,39 @@ export default function GalleryMusic({
       <div className="music-heading">
         <div>
           <p className="eyebrow">{compact ? "SPOTIFY" : "SOUNDTRACK"}</p>
-          <p className="music-credit">
-            {compact ? (
-              <a
-                href={playlist.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Open playlist in Spotify"
-              >
-                {artistName} <Icon />
-              </a>
-            ) : (
-              <>Selected by {artistName}</>
-            )}
-          </p>
+          <p className="music-credit">Selected by {artistName}</p>
         </div>
         <button
           className="text-button icon-button"
-          aria-label={open ? "Stop music" : "Listen on Spotify"}
-          title={open ? "Stop music" : "Play playlist"}
+          aria-label={open ? "Stop music" : "Open Spotify player"}
+          title={open ? "Stop music" : "Open Spotify player"}
           type="button"
           aria-expanded={open}
-          aria-controls="gallery-playlist"
+          aria-controls={playerId}
           onClick={() => setOpen(!open)}
         >
-          <Icon kind={open ? "stop" : "play"} />
+          <Icon kind={open ? "stop" : "music"} />
         </button>
       </div>
       {open && (
-        <div id="gallery-playlist">
+        <div id={playerId}>
           <iframe
-            src={
-              autoOpen ? `${playlist.embedUrl}&autoplay=1` : playlist.embedUrl
-            }
+            src={playlist.embedUrl}
             title={`${artistName}’s Spotify playlist`}
             width="100%"
-            height={compact ? "80" : "352"}
+            height={compact ? "152" : "352"}
             allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
             allowFullScreen
             referrerPolicy="strict-origin-when-cross-origin"
           />
-          <p className="music-note">
-            Press play in Spotify to listen.{" "}
-            <a href={playlist.url} target="_blank" rel="noopener noreferrer">
-              Open playlist in Spotify <Icon />
-            </a>
-          </p>
         </div>
       )}
+      <p className="music-note">
+        {open ? "Press play inside Spotify." : "Player stopped."}{" "}
+        <a href={playlist.url} target="_blank" rel="noopener noreferrer">
+          Open playlist in Spotify <Icon />
+        </a>
+      </p>
     </section>
   );
 }
