@@ -26,7 +26,7 @@ Do not run both servers on the same port. To choose another port, use `npm run d
 
 - Drag or touch the actual 3D globe. It rotates slowly while idle; interactions, pin focus and the pause control stop idle rotation. Reduced-motion preferences disable idle animation and camera transitions.
 - Antique-brass teardrop pins have 26–28px visible shapes, 44px touch targets and tips anchored to geographic positions. They show artist names and cities on hover, focus or selection. A single-artist pin opens its gallery directly. Paris offers two artist links. Escape dismisses its selection list. Rear-facing pins are removed from the DOM and cannot intercept clicks or keyboard navigation.
-- The compact Explore artists menu provides a keyboard-friendly route to every gallery.
+- Globe pins support keyboard navigation. If the globe is unavailable, gallery links appear in its place.
 - Each `/gallery/[artistSlug]` route renders actual connected rooms with walls, mouldings, a wooden floor, layered gold frames and aspect-correct artwork surfaces. The existing demo artists still have six works each.
 - Select **Walk through the gallery**, then use WASD or arrow keys while the room has focus. Drag to look. On mobile, hold the on-screen direction buttons and swipe the room to look. Movement stops on release, cancellation, focus loss or opening artwork details.
 - Previous/next remains a guided alternative. Guided paths use the central doorways when crossing rooms. **Reset view** always returns to the entrance, including after free exploration. Reduced motion makes guided changes instantaneous and uses a slower, direct walking speed without inertia or head bob.
@@ -80,7 +80,7 @@ Player tests validate URL handling, explicit loading, closing, keyboard access a
 
 ## Create your gallery
 
-Choose **Add your pin & artwork** on the homepage or visit `/studio`. Start with an empty collection, enter your artist name, city, country and introduction, then tap the world map to place your pin (or enter latitude/longitude). Upload your own JPG/PNG/WebP artwork, add titles and descriptions, and optionally connect a public Spotify playlist. Choose **Save pin & gallery** to add your gallery to this browser’s globe and artist menu. You can edit only galleries created in this browser through the **Your galleries in this browser** selector.
+Choose **Add your pin & artwork** on the homepage or visit `/studio`. Start with an empty collection, enter your artist name, city, country and introduction, then tap the world map to place your pin (or enter latitude/longitude). Upload your own JPG/PNG/WebP artwork, add titles and descriptions, and optionally connect a public Spotify playlist. Choose **Save pin & gallery** to add your gallery to this browser’s globe. You can edit only galleries created in this browser through the **Your galleries in this browser** selector.
 
 The eight existing artists are read-only. Their galleries always render the supplied collection, and legacy local edits cannot override them. Old draft records are preserved in storage but no longer offered for editing. New galleries use a separate IndexedDB store and local-only URLs under `/gallery/local/`. Links cannot transfer uploads to another browser or device. No account or shared publication is implied.
 

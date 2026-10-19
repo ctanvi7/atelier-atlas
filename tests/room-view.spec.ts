@@ -10,7 +10,15 @@ for (const width of [1440, 390]) {
       }),
     );
     await page.goto("/gallery/elia-monroe");
-    await expect(page.locator(".artist-about")).toHaveCount(0);
+    await expect(page.locator(".artist-about, .draft-notice")).toHaveCount(0);
+    await expect(
+      page
+        .getByRole("button", { name: "Full screen", exact: true })
+        .locator("svg"),
+    ).toHaveCount(1);
+    await expect(
+      page.getByRole("button", { name: "Stop music" }).locator("svg"),
+    ).toHaveCount(1);
     const room = page.locator(".room-section");
     await expect(room.locator("iframe")).toBeVisible();
     await room.getByRole("button", { name: "Stop music" }).click();

@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, type RefObject } from "react";
+import Icon from "./Icon";
 import ActionButton from "./ActionButton";
 export type WalkInput = {
   keys: Set<string>;
@@ -47,18 +48,19 @@ export default function ExplorationControls({
   return (
     <div className="exploration-controls">
       <ActionButton
-        className="explore-toggle"
+        className="explore-toggle icon-button"
+        aria-label={exploring ? "Walking enabled" : "Walk through the gallery"}
+        title={exploring ? "Walking enabled" : "Walk through the gallery"}
         aria-pressed={exploring}
         onActivate={onExplore}
         disabled={disabled}
       >
-        {exploring ? "Walking enabled" : "Walk through the gallery"}
+        <Icon kind="walk" />
       </ActionButton>
       <p id="walking-instructions">
         {exploring
-          ? "WASD or arrow keys to walk. Drag the room to look. On touch, hold an on-screen arrow and swipe the room to look."
-          : "Explore freely, or use previous / next for a guided view."}{" "}
-        <span>Reset view returns to the entrance.</span>
+          ? "WASD / arrows to walk · Drag to look · Touch: hold arrows and swipe"
+          : "Walk freely or browse with the arrows"}{" "}
       </p>
     </div>
   );

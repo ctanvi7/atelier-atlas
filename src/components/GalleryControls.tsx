@@ -33,11 +33,7 @@ export default function GalleryControls({
             ? "THE ENTRANCE"
             : `WORK ${selected + 1} OF ${works.length}`}
         </span>
-        <span>
-          {selected === null
-            ? "A moment to take it all in"
-            : works[selected].title}
-        </span>
+        <span>{selected === null ? "Welcome" : works[selected].title}</span>
       </div>
       <ActionButton
         aria-label="Next artwork"
@@ -49,13 +45,20 @@ export default function GalleryControls({
       </ActionButton>
       <span className="control-divider" />
       <ActionButton
-        className="inspect-button"
+        className="inspect-button icon-button"
+        aria-label="View artwork"
+        title="View artwork"
         onActivate={() => onInspect(selected ?? 0)}
       >
-        View artwork <Icon />
+        <Icon kind="eye" />
       </ActionButton>
-      <ActionButton className="reset-button" onActivate={() => onSelect(null)}>
-        Reset view
+      <ActionButton
+        className="reset-button icon-button"
+        aria-label="Reset view"
+        title="Reset view"
+        onActivate={() => onSelect(null)}
+      >
+        <Icon kind="reset" />
       </ActionButton>
     </div>
   );
