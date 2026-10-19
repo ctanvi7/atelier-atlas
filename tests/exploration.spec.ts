@@ -37,7 +37,7 @@ async function pose(page: Page) {
 test("desktop walking, drag-to-look, collision, focus loss and reset", async ({
   page,
 }) => {
-  await page.goto("/gallery/celine-moreau");
+  await page.goto("/gallery/elia-monroe");
   await expect(page.locator("canvas")).toHaveAttribute(
     "data-position",
     /6\.500/,
@@ -89,7 +89,7 @@ test("mobile press-and-hold, swipe-look and release stop, with reduced motion", 
     reducedMotion: "reduce",
   });
   const page = await context.newPage();
-  await page.goto("http://127.0.0.1:3000/gallery/celine-moreau");
+  await page.goto("http://127.0.0.1:3000/gallery/elia-monroe");
   await page.getByRole("button", { name: "Walk through the gallery" }).tap();
   const control = page.getByRole("button", { name: "Walk forward" });
   await control.scrollIntoViewIfNeeded();

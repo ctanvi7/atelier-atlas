@@ -1,6 +1,8 @@
 Atelier Atlas — demonstration collection
 
-All artist identities, biographies and artwork titles are fictional.
+Artist names were supplied for this demo. Locations, biographies and sample artwork titles are illustrative and do not assert facts about real people.
+
+The eight PNG paintings named for artist slugs in /art are AI-generated sample artworks created with OpenAI image generation for Atelier Atlas. They are not works supplied by those artists. The SVG CC0 dedication below applies to the SVG samples only. User uploads remain local to the browser and are not covered by these sample credits.
 All sample artwork SVGs in /art were created for this project and are released under CC0 1.0 (public domain dedication): https://creativecommons.org/publicdomain/zero/1.0/
 
 Geography: Natural Earth, public domain, 1:110m land outlines.

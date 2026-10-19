@@ -19,12 +19,22 @@ export default function Landing() {
     <main className="landing">
       <nav className="topbar">
         <span className="small-caps">Independent art. Without borders.</span>
-        <a href="#artists">
-          Explore the artists{" "}
-          <span aria-hidden>
-            <Icon />
-          </span>
-        </a>
+        <details className="artist-menu">
+          <summary>
+            Explore artists{" "}
+            <span aria-hidden>
+              <Icon />
+            </span>
+          </summary>
+          <nav aria-label="Choose an artist">
+            {artists.map((artist) => (
+              <Link key={artist.slug} href={`/gallery/${artist.slug}`}>
+                {artist.name}
+                <small>{artist.city}</small>
+              </Link>
+            ))}
+          </nav>
+        </details>
       </nav>
       <header className="hero-heading">
         <p className="eyebrow">A NEW PERSPECTIVE ON ART</p>
@@ -49,14 +59,14 @@ export default function Landing() {
           <SceneBoundary
             fallback={
               <div className="scene-message">
-                The globe couldn’t load. Discover every artist in the directory
-                below.
+                The globe couldn’t load. Choose a gallery from Explore artists
+                above.
               </div>
             }
           >
             {gl === false ? (
               <div className="scene-message">
-                Discover a world of art in the artist directory below.
+                Choose a gallery from Explore artists above.
                 <br />
                 <small>3D is unavailable on this device.</small>
               </div>
@@ -92,54 +102,9 @@ export default function Landing() {
           </button>
         )}
       </section>
-      <div className="landing-divider">
-        <span>ART HAS NO BORDERS</span>
-        <a href="#artists" aria-label="Browse the artist directory">
-          ↓
-        </a>
-        <span>TAKE YOUR TIME HERE</span>
-      </div>
-      <section id="artists" className="artist-directory">
-        <div className="section-intro">
-          <div>
-            <p className="eyebrow">THE FIRST COLLECTION</p>
-            <h2>Meet a world of perspectives.</h2>
-          </div>
-          <p>
-            Five imagined artists. Four cities.
-            <br />
-            An invitation to look a little closer.
-          </p>
-        </div>
-        <div className="artist-list">
-          {artists.map((a, i) => (
-            <Link
-              className="artist-row"
-              href={`/gallery/${a.slug}`}
-              key={a.slug}
-            >
-              <span className="artist-number">0{i + 1}</span>
-              <span className="artist-name">
-                {a.name}
-                <small>{a.discipline}</small>
-              </span>
-              <span className="artist-city">
-                {a.city}, {a.country}
-              </span>
-              <span className="row-arrow" aria-hidden>
-                <Icon />
-              </span>
-            </Link>
-          ))}
-        </div>
-        <p className="sample-note">
-          A demonstration collection · All artists are fictional. Artwork is
-          original sample imagery.
-        </p>
-      </section>
       <footer>
         <span className="footer-logo">Atelier Atlas</span>
-        <span>A slower way to discover art.</span>
+        <Link href="/studio">Artist studio</Link>
         <a href="/ATTRIBUTION.txt">Credits & image licences</a>
       </footer>
     </main>
