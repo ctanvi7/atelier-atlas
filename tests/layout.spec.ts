@@ -97,3 +97,41 @@ test("swept collision stops walls, door jambs and frame surfaces, but allows con
   expect(createExhibition([]).rooms).toHaveLength(0);
   expect(() => createExhibition(collection(25))).toThrow(/24/);
 });
+
+test("guided navigation remains clear after free exploration beside frames and partitions", () => {
+  for (const count of [1, 8, 9, 16, 17, 24]) {
+    const layout = createExhibition(collection(count));
+    for (const room of layout.rooms) {
+      for (const x of [-5.4, -5.1, -3, 0, 3, 5.1, 5.4]) {
+        for (let z = room.centerZ - 6.4; z < room.centerZ + 6.5; z += 0.4) {
+          const from: Point = [x, 2.45, z];
+          if (!isWalkable(from, layout)) continue;
+          for (const target of [
+            ENTRANCE,
+            ...layout.placements.map((p) => p.camera),
+          ]) {
+            let start = from;
+            for (const next of guidedPath(from, target, layout)) {
+              const steps = Math.ceil(
+                Math.hypot(next[0] - start[0], next[2] - start[2]) / 0.08,
+              );
+              for (let step = 1; step <= steps; step++) {
+                const point: Point = [
+                  start[0] + ((next[0] - start[0]) * step) / steps,
+                  2.45,
+                  start[2] + ((next[2] - start[2]) * step) / steps,
+                ];
+                if (!isWalkable(point, layout)) {
+                  throw new Error(
+                    `Blocked ${count}-work route from ${from} to ${target} at ${point}`,
+                  );
+                }
+              }
+              start = next;
+            }
+          }
+        }
+      }
+    }
+  }
+});
