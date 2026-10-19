@@ -1,0 +1,111 @@
+1
+00:00:00,350 --> 00:00:04,695
+What if discovering art felt less like scrolling, and more like stepping into
+
+2
+00:00:04,695 --> 00:00:05,363
+another world?
+
+3
+00:00:07,350 --> 00:00:08,385
+Meet Atelier Atlas.
+
+4
+00:00:08,385 --> 00:00:12,873
+A world of independent art, where every golden pin is an invitation to
+
+5
+00:00:12,873 --> 00:00:14,253
+discover a different perspective.
+
+6
+00:00:17,350 --> 00:00:19,051
+Choose a place on the globe.
+
+7
+00:00:19,051 --> 00:00:22,736
+Even artists who share a city have their own space to tell their
+
+8
+00:00:22,736 --> 00:00:23,020
+story.
+
+9
+00:00:24,350 --> 00:00:26,626
+Enter an artist's three dimensional gallery.
+
+10
+00:00:26,626 --> 00:00:31,558
+Follow a guided view, move between artworks, and open a painting to discover
+
+11
+00:00:31,558 --> 00:00:33,454
+its title, materials, and meaning.
+
+12
+00:00:36,350 --> 00:00:38,157
+Or take your own path.
+
+13
+00:00:38,157 --> 00:00:42,495
+Walk through the room, drag to look around, and expand the exhibition.
+
+14
+00:00:42,495 --> 00:00:46,110
+Gallery layouts adapt to the collection and each painting's proportions.
+
+15
+00:00:48,350 --> 00:00:53,390
+Artists can connect a Spotify playlist, adding another layer to their exhibition.
+
+16
+00:00:53,390 --> 00:00:55,910
+Playback stays in Spotify's own controls.
+
+17
+00:00:56,910 --> 00:01:02,763
+A complete two dimensional collection offers another way to explore, alongside keyboard access,
+
+18
+00:01:02,763 --> 00:01:05,465
+mobile controls, and reduced motion support.
+
+19
+00:01:06,465 --> 00:01:09,171
+And you can become part of the atlas.
+
+20
+00:01:09,171 --> 00:01:13,569
+Create a profile, place your pin, upload your own artwork, and give it
+
+21
+00:01:13,569 --> 00:01:14,922
+a title and description.
+
+22
+00:01:14,922 --> 00:01:17,290
+Connect a playlist, then save your gallery.
+
+23
+00:01:17,290 --> 00:01:19,996
+In this prototype, contributions stay in your browser.
+
+24
+00:01:29,465 --> 00:01:33,119
+Your new pin opens a gallery built around your work.
+
+25
+00:01:33,119 --> 00:01:36,773
+Next, we want to make these exhibitions persistent and shared.
+
+26
+00:01:37,773 --> 00:01:38,489
+Atelier Atlas.
+
+27
+00:01:38,489 --> 00:01:41,714
+A world of art, a space of your own.
+
+28
+00:01:41,714 --> 00:01:44,938
+Discover it at atelier atlas dot vercel dot app.
