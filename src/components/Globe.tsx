@@ -8,7 +8,12 @@ import { feature } from "topojson-client";
 import { geoEquirectangular, geoPath } from "d3-geo";
 import type { Topology, GeometryObject } from "topojson-specification";
 import type { Feature, FeatureCollection } from "geojson";
-import { locations, latLngToPosition } from "@/lib/data";
+import {
+  groupLocations,
+  galleryHref,
+  latLngToPosition,
+  type Artist,
+} from "@/lib/data";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useReducedMotion } from "./useMotion";
@@ -68,7 +73,7 @@ function Pin({
   setOpen,
   setEngaged,
 }: {
-  location: (typeof locations)[number];
+  location: ReturnType<typeof groupLocations>[number];
   index: number;
   open: number | null;
   setOpen: (n: number | null) => void;
@@ -162,7 +167,7 @@ function Pin({
                 ) < 6)
             ) {
               if (location.artists.length === 1)
-                router.push(`/gallery/${location.artists[0].slug}`);
+                router.push(galleryHref(location.artists[0]));
               else setOpen(open === index ? null : index);
             }
           }}
@@ -203,7 +208,7 @@ function Pin({
                 : "CHOOSE AN ARTIST"}
             </div>
             {location.artists.map((a) => (
-              <Link key={a.slug} href={`/gallery/${a.slug}`}>
+              <Link key={a.slug} href={galleryHref(a)}>
                 {a.name}
                 <span>
                   Enter gallery <Icon />
@@ -219,7 +224,16 @@ function Pin({
     </Html>
   );
 }
-function World({ paused, onReady }: { paused: boolean; onReady: () => void }) {
+function World({
+  paused,
+  onReady,
+  artists,
+}: {
+  paused: boolean;
+  onReady: () => void;
+  artists: Artist[];
+}) {
+  const locations = groupLocations(artists);
   const texture = useLand();
   useEffect(() => {
     if (texture) onReady();
@@ -244,7 +258,7 @@ function World({ paused, onReady }: { paused: boolean; onReady: () => void }) {
       {texture &&
         locations.map((l, i) => (
           <Pin
-            key={l.city}
+            key={l.key}
             location={l}
             index={i}
             open={open}
@@ -266,7 +280,13 @@ function World({ paused, onReady }: { paused: boolean; onReady: () => void }) {
     </>
   );
 }
-export default function Globe({ paused }: { paused: boolean }) {
+export default function Globe({
+  paused,
+  artists,
+}: {
+  paused: boolean;
+  artists: Artist[];
+}) {
   const [loaded, setLoaded] = useState(false);
   const onReady = useCallback(() => setLoaded(true), []);
   return (
@@ -277,7 +297,7 @@ export default function Globe({ paused }: { paused: boolean }) {
         gl={{ alpha: true, antialias: true }}
         aria-label="Drag to rotate the globe. Gold pins reveal artists; the Explore artists menu offers the same destinations."
       >
-        <World paused={paused} onReady={onReady} />
+        <World paused={paused} onReady={onReady} artists={artists} />
       </Canvas>
       {!loaded && (
         <div className="scene-message texture-loading-overlay" role="status">

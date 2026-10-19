@@ -169,9 +169,24 @@ export const artists: Artist[] = profiles.map(
     ],
   }),
 );
-export const locations = Array.from(new Set(artists.map((a) => a.city))).map(
-  (city) => ({ city, artists: artists.filter((a) => a.city === city) }),
-);
+export function groupLocations(collection: Artist[]) {
+  const groups = new Map<
+    string,
+    { key: string; city: string; artists: Artist[] }
+  >();
+  for (const artist of collection) {
+    const key = `${artist.lat.toFixed(4)},${artist.lng.toFixed(4)}`;
+    const existing = groups.get(key);
+    if (existing) existing.artists.push(artist);
+    else groups.set(key, { key, city: artist.city, artists: [artist] });
+  }
+  return Array.from(groups.values());
+}
+export function galleryHref(artist: Artist) {
+  return artist.slug.startsWith("local-")
+    ? `/gallery/local/${artist.slug}`
+    : `/gallery/${artist.slug}`;
+}
 export function latLngToPosition(
   lat: number,
   lng: number,

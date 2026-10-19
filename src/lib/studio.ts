@@ -1,4 +1,4 @@
-import type { Artwork } from "./data";
+import type { Artist, Artwork } from "./data";
 import { spotifyPlaylist } from "./spotify";
 
 export type ArtistDraft = {
@@ -10,8 +10,19 @@ const DB = "atelier-atlas-studio";
 
 function database(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB, 1);
-    request.onupgradeneeded = () => request.result.createObjectStore("artists");
+    const request = indexedDB.open(DB, 2);
+    request.onupgradeneeded = () => {
+      if (!request.result.objectStoreNames.contains("artists"))
+        request.result.createObjectStore("artists");
+      if (!request.result.objectStoreNames.contains("galleries"))
+        request.result.createObjectStore("galleries");
+    };
+    request.onblocked = () =>
+      reject(
+        new Error(
+          "Close other Atelier Atlas tabs and reload to upgrade local storage.",
+        ),
+      );
     request.onsuccess = () => resolve(request.result);
     request.onerror = () =>
       reject(
@@ -64,36 +75,67 @@ export function validateDraft(value: unknown): ArtistDraft {
   return draft;
 }
 
-export async function readDraft(slug: string): Promise<ArtistDraft | null> {
+export function validateGallery(value: unknown): Artist {
+  const artist = value as Artist;
+  if (
+    !artist ||
+    !/^local-[a-f0-9-]{36}$/.test(artist.slug) ||
+    ![artist.name, artist.city, artist.country].every(
+      (s) => typeof s === "string" && s.trim().length > 0 && s.length <= 100,
+    ) ||
+    typeof artist.bio !== "string" ||
+    artist.bio.length > 1500 ||
+    typeof artist.discipline !== "string" ||
+    artist.discipline.length > 160 ||
+    !Number.isFinite(artist.lat) ||
+    !Number.isFinite(artist.lng) ||
+    Math.abs(artist.lat) > 90 ||
+    Math.abs(artist.lng) > 180
+  )
+    throw new Error("Add your name, city, country and a valid pin location.");
+  validateDraft({
+    version: 1,
+    works: artist.works,
+    spotifyPlaylistUrl: artist.spotifyPlaylistUrl ?? "",
+  });
+  if (
+    !artist.works.length ||
+    artist.works.some((w) => w.sample || !w.image.startsWith("data:image/"))
+  )
+    throw new Error("Add at least one of your own artworks.");
+  return artist;
+}
+
+export async function listGalleries(): Promise<Artist[]> {
   const db = await database();
   try {
     return await new Promise((resolve, reject) => {
       const request = db
-        .transaction("artists")
-        .objectStore("artists")
-        .get(slug);
+        .transaction("galleries")
+        .objectStore("galleries")
+        .getAll();
       request.onsuccess = () => {
         try {
-          resolve(request.result ? validateDraft(request.result) : null);
+          resolve(request.result.map(validateGallery));
         } catch (error) {
           reject(error);
         }
       };
       request.onerror = () =>
-        reject(new Error("The saved collection could not be read."));
+        reject(new Error("Your local galleries could not be loaded."));
     });
   } finally {
     db.close();
   }
 }
 
-export async function saveDraft(slug: string, draft: ArtistDraft) {
-  validateDraft(draft);
+export async function saveGallery(artist: Artist) {
+  validateGallery(artist);
   const db = await database();
   try {
     await new Promise<void>((resolve, reject) => {
-      const transaction = db.transaction("artists", "readwrite");
-      transaction.objectStore("artists").put(draft, slug);
+      const transaction = db.transaction("galleries", "readwrite");
+      transaction.objectStore("galleries").put(artist, artist.slug);
       transaction.oncomplete = () => resolve();
       transaction.onabort = transaction.onerror = () =>
         reject(
@@ -105,9 +147,10 @@ export async function saveDraft(slug: string, draft: ArtistDraft) {
   } finally {
     db.close();
   }
+  window.dispatchEvent(new Event("atelier-galleries"));
   if (typeof BroadcastChannel !== "undefined") {
     const channel = new BroadcastChannel("atelier-studio");
-    channel.postMessage(slug);
+    channel.postMessage(artist.slug);
     channel.close();
   }
 }

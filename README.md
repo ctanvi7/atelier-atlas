@@ -70,16 +70,18 @@ Artist accounts, shared publishing, server database integration, recommendations
 
 ## Gallery soundtracks
 
-Set `spotifyPlaylistUrl` on an artist record in `src/lib/data.ts` to that artist’s public Spotify playlist share URL (`https://open.spotify.com/playlist/…`). All eight artists have their supplied playlist assigned; empty or invalid values hide the music section. No Spotify API key, account integration, or backend is required. The studio also lets you override the playlist in a browser-local draft.
+Set `spotifyPlaylistUrl` on an artist record in `src/lib/data.ts` to that artist’s public Spotify playlist share URL (`https://open.spotify.com/playlist/…`). All eight artists have their supplied playlist assigned; empty or invalid values hide the music section. No Spotify API key, account integration, or backend is required. New contributors can choose a playlist for their own gallery in the studio. Existing artist playlists are read-only.
 
 The gallery shows a soundtrack panel in both 3D and 2D views. Visitors choose **Listen on Spotify** to load the official Spotify embed, then press play inside it. Closing the player or leaving the gallery removes the iframe and stops its playback; switching between 3D and 2D keeps it mounted. Playback availability, previews, sign-in and regional restrictions are controlled by Spotify. The direct playlist link remains available if the embedded player is blocked. No autoplay is requested.
 
 Player tests validate URL handling, explicit loading, closing, keyboard access and mobile width with a mocked Spotify iframe. They do not verify real audio playback or Spotify account behaviour.
 
-## Artist studio
+## Create your gallery
 
-Open `/studio` or choose **Artist studio** in the footer. Select one of the eight demo profiles, add JPG/PNG/WebP artwork, edit titles and labels, reorder or remove pieces, and paste a public Spotify playlist link. Click **Save to this browser**, then **View saved gallery**. The gallery uses the saved collection in both 3D and 2D; already-open galleries receive updates from other tabs on the same origin. Empty collections show an invitation to add artwork.
+Choose **Add your pin & artwork** on the homepage or visit `/studio`. Start with an empty collection, enter your artist name, city, country and introduction, then tap the world map to place your pin (or enter latitude/longitude). Upload your own JPG/PNG/WebP artwork, add titles and descriptions, and optionally connect a public Spotify playlist. Choose **Save pin & gallery** to add your gallery to this browser’s globe and artist menu. You can edit only galleries created in this browser through the **Your galleries in this browser** selector.
 
-Drafts use IndexedDB, isolated by artist slug and website origin. This is a local studio, not an authentication or publishing system. Nothing is sent to a server. Clearing browser site data removes drafts; keep original images. Images must be at most 10 MB and 40 megapixels. They are decoded and re-encoded as WebP at at most 2048 pixels along the longest edge, preserving proportions. SVG uploads and invalid files are rejected. Each gallery supports at most 24 artworks. Save failures remain visible and leave the draft unsaved.
+The eight existing artists are read-only. Their galleries always render the supplied collection, and legacy local edits cannot override them. Old draft records are preserved in storage but no longer offered for editing. New galleries use a separate IndexedDB store and local-only URLs under `/gallery/local/`. Links cannot transfer uploads to another browser or device. No account or shared publication is implied.
 
-Eight AI-generated sample paintings live in `public/art/<artist-slug>.png`, alongside the existing geometric sample illustrations. Locations and biographies are illustrative placeholders, not verified information about real people. All eight supplied Spotify playlist URLs are in `src/lib/data.ts`.
+Images must be at most 10 MB and 40 megapixels. They are decoded and re-encoded as WebP at at most 2048 pixels along the longest edge, preserving proportions. SVG uploads and invalid files are rejected. Each new gallery needs 1–24 artworks. Saving updates already-open local galleries and the globe in other tabs. Storage failures remain visible; clearing site data removes local galleries, so keep your original images.
+
+The eight generated PNG sample paintings and existing SVG illustrations remain labelled in the collection and credits. Their artist locations and biographies are illustrative. All supplied Spotify playlist URLs remain assigned to the original artists.

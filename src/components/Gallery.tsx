@@ -63,8 +63,7 @@ export default function Gallery({ artist }: { artist: Artist }) {
       </nav>
       <header className="gallery-heading">
         <p className="eyebrow">
-          {artist.city}, {artist.country} <span> / </span> A DEMONSTRATION
-          EXHIBITION
+          {artist.city}, {artist.country} <span> / </span> AN ARTIST EXHIBITION
         </p>
         <h1>{artist.name}</h1>
         <p>{artist.discipline}</p>
@@ -186,13 +185,13 @@ export default function Gallery({ artist }: { artist: Artist }) {
         <p className="eyebrow">BEHIND THE COLLECTION</p>
         <p>{artist.bio}</p>
         <small>
-          Demo artist profile · {artist.works.length} works · Sample artworks
-          are labelled.
+          {artist.works.length} works · Explore the artwork titles and labels
+          above.
         </small>
       </section>
       <footer>
         <Link href="/">← A world of art awaits</Link>
-        <Link href="/studio">Artist studio</Link>
+        <Link href="/studio">Add your pin &amp; artwork</Link>
         <a href="/ATTRIBUTION.txt">Credits & image licences</a>
       </footer>
       {detail !== null && (
