@@ -8,6 +8,7 @@ import SceneBoundary from "./SceneBoundary";
 import { useWebGL } from "./useMotion";
 import GalleryControls from "./GalleryControls";
 import ArtworkDetails from "./ArtworkDetails";
+import GalleryMusic from "./GalleryMusic";
 import ExplorationControls, {
   createWalkInput,
   WalkPad,
@@ -32,7 +33,7 @@ export default function Gallery({ artist }: { artist: Artist }) {
     setRequest((n) => n + 1);
   };
   const roomCount = Math.ceil(artist.works.length / 8);
-  const flat = twoD || gl === false;
+  const flat = twoD || gl === false || artist.works.length === 0;
   const fallback = (
     <div className="scene-message">
       The 3D room couldn’t load.
@@ -82,6 +83,11 @@ export default function Gallery({ artist }: { artist: Artist }) {
       </aside>
       {flat ? (
         <section className="flat-gallery" aria-label="2D artwork collection">
+          {artist.works.length === 0 && (
+            <p className="empty-collection">
+              This collection is waiting for its first artwork.
+            </p>
+          )}
           {artist.works.map((w, i) => (
             <button
               key={w.id}
@@ -157,6 +163,11 @@ export default function Gallery({ artist }: { artist: Artist }) {
           onInspect={setDetail}
         />
       )}
+      <GalleryMusic
+        key={artist.slug}
+        artistName={artist.name}
+        playlistUrl={artist.spotifyPlaylistUrl}
+      />
       <details className="artwork-catalogue">
         <summary>Artwork titles &amp; labels</summary>
         <ol>
@@ -175,12 +186,13 @@ export default function Gallery({ artist }: { artist: Artist }) {
         <p className="eyebrow">BEHIND THE COLLECTION</p>
         <p>{artist.bio}</p>
         <small>
-          Fictional artist · {artist.works.length} original sample works · No
-          artwork is offered for sale.
+          Demo artist profile · {artist.works.length} works · Sample artworks
+          are labelled.
         </small>
       </section>
       <footer>
         <Link href="/">← A world of art awaits</Link>
+        <Link href="/studio">Artist studio</Link>
         <a href="/ATTRIBUTION.txt">Credits & image licences</a>
       </footer>
       {detail !== null && (

@@ -5,7 +5,7 @@ test("brass pins anchor their tips, have generous targets, and reject a returnin
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   const paris = page.getByRole("button", {
-    name: /Céline Moreau and Lucien Delacroix/,
+    name: /Elia Monroe and Sloane Ellis/,
   });
   await expect(paris).toBeVisible();
   const geometry = await paris.evaluate((button) => {
@@ -52,7 +52,7 @@ test("mobile pin labels stay within the viewport near the globe edge", async ({
   await page.setViewportSize({ width: 390, height: 844 });
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
-  const pin = page.getByRole("button", { name: "Inés Sol — Mexico City" });
+  const pin = page.getByRole("button", { name: "Cleo Winters — Mexico City" });
   await expect(pin).toBeVisible();
   await pin.focus();
   const tooltip = page

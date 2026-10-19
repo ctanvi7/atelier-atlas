@@ -46,7 +46,7 @@ export default function ArtworkDetails({
           src={work.image}
           width={work.width}
           height={work.height}
-          alt={`${work.title}, an abstract sample composition`}
+          alt={work.title}
         />
       </div>
       <div className="detail-copy">
@@ -57,7 +57,9 @@ export default function ArtworkDetails({
         <p className="medium">
           {work.medium}
           <br />
-          Original illustration · CC0
+          {work.sample
+            ? "Sample artwork · demonstration collection"
+            : "Uploaded artwork · local preview"}
         </p>
       </div>
     </dialog>

@@ -10,8 +10,14 @@ test("geographic coordinates and all artwork aspect ratios match local images", 
     for (const w of a.works) {
       const res = await request.get(w.image);
       expect(res.ok()).toBeTruthy();
-      const svg = await res.text();
-      expect(svg).toContain(`width="${w.width}" height="${w.height}"`);
+      if (w.image.endsWith(".png")) {
+        const png = await res.body();
+        expect(png.readUInt32BE(16)).toBe(w.width);
+        expect(png.readUInt32BE(20)).toBe(w.height);
+      } else {
+        const svg = await res.text();
+        expect(svg).toContain(`width="${w.width}" height="${w.height}"`);
+      }
     }
   }
 });
@@ -21,23 +27,23 @@ test("globe to artist, artwork dialog, 2D mode and back", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "Pause rotation" }).click();
   const paris = page.getByRole("button", {
-    name: /Céline Moreau and Lucien Delacroix/,
+    name: /Elia Monroe and Sloane Ellis/,
   });
   await expect(paris).toBeVisible();
   await expect(
-    page.getByRole("button", { name: /Aiko Mori — Kyoto/ }),
+    page.getByRole("button", { name: /Nina Calloway — Kyoto/ }),
   ).toHaveCount(0);
   await paris.focus();
   await expect(
-    page.locator(".pin-tooltip").filter({ hasText: "Céline Moreau" }),
+    page.locator(".pin-tooltip").filter({ hasText: "Elia Monroe" }),
   ).toBeVisible();
   await page.screenshot({ path: "/tmp/atelier-landing.png", fullPage: true });
   await paris.press("Enter");
   await expect(page.locator(".pin-selection a")).toHaveCount(2);
   await page.locator(".pin-selection a").first().click();
-  await expect(page).toHaveURL(/gallery\/celine-moreau/);
+  await expect(page).toHaveURL(/gallery\/elia-monroe/);
   await expect(
-    page.getByRole("heading", { name: "Céline Moreau", exact: true }),
+    page.getByRole("heading", { name: "Elia Monroe", exact: true }),
   ).toBeVisible();
   await expect(page.locator("canvas")).toHaveCount(1);
   await page.waitForTimeout(1800);
@@ -67,7 +73,7 @@ test("globe to artist, artwork dialog, 2D mode and back", async ({ page }) => {
   await page.getByRole("button", { name: "View artwork" }).click();
   await expect(page.getByRole("dialog")).toBeVisible();
   await expect(
-    page.getByRole("heading", { name: "The quiet between" }),
+    page.getByRole("heading", { name: "Where the morning rests" }),
   ).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog")).toHaveCount(0);
@@ -105,7 +111,7 @@ test("globe rotates on drag and idle, with no drag selection", async ({
   await page.waitForTimeout(600);
   expect(Buffer.compare(first, await canvas.screenshot())).not.toBe(0);
   await expect(
-    page.getByRole("button", { name: /Céline Moreau and Lucien Delacroix/ }),
+    page.getByRole("button", { name: /Elia Monroe and Sloane Ellis/ }),
   ).toHaveCount(0);
   await expect(page.locator(".pin-selection")).toHaveCount(0);
   await expect(page).toHaveURL("/");
@@ -144,7 +150,7 @@ test("direct gallery URLs, mobile layout and accessible details", async ({
     ),
   ).toBeTruthy();
 });
-test("WebGL unavailable: directory and complete 2D collection still work", async ({
+test("WebGL unavailable: artist menu and complete 2D collection still work", async ({
   page,
 }) => {
   await page.addInitScript(() => {
@@ -152,7 +158,12 @@ test("WebGL unavailable: directory and complete 2D collection still work", async
       null) as typeof HTMLCanvasElement.prototype.getContext;
   });
   await page.goto("/");
-  await page.locator(".artist-row").first().click();
+  await page.locator(".artist-menu summary").click();
+  await page
+    .getByRole("navigation", { name: "Choose an artist" })
+    .getByRole("link")
+    .first()
+    .click();
   await expect(
     page.getByText("WebGL is unavailable.", { exact: false }),
   ).toBeVisible();
@@ -169,7 +180,7 @@ test("reduced motion stays still; a single artist pin navigates directly", async
 }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
-  const pin = page.getByRole("button", { name: "Amara Olu — Lagos" });
+  const pin = page.getByRole("button", { name: "Arden Blake — Lagos" });
   await expect(pin).toBeVisible();
   await page.waitForTimeout(250);
   const before = await page.locator("canvas").screenshot();
@@ -178,7 +189,7 @@ test("reduced motion stays still; a single artist pin navigates directly", async
     Buffer.compare(before, await page.locator("canvas").screenshot()),
   ).toBe(0);
   await pin.click();
-  await expect(page).toHaveURL("/gallery/amara-olu");
+  await expect(page).toHaveURL("/gallery/arden-blake");
 });
 
 test("mobile touch gestures rotate without selecting; touch pin opens choices", async ({
@@ -193,7 +204,7 @@ test("mobile touch gestures rotate without selecting; touch pin opens choices", 
   const page = await context.newPage();
   await page.goto("http://127.0.0.1:3000");
   const paris = page.getByRole("button", {
-    name: /Céline Moreau and Lucien Delacroix/,
+    name: /Elia Monroe and Sloane Ellis/,
   });
   await expect(paris).toBeVisible();
   await paris.tap();

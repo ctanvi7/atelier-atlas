@@ -275,7 +275,7 @@ export default function Globe({ paused }: { paused: boolean }) {
         camera={{ position: [5, 2.1, 3.7], fov: 43 }}
         dpr={[1, 1.75]}
         gl={{ alpha: true, antialias: true }}
-        aria-label="Drag to rotate the globe. Gold pins reveal artists; the artist directory offers the same destinations."
+        aria-label="Drag to rotate the globe. Gold pins reveal artists; the Explore artists menu offers the same destinations."
       >
         <World paused={paused} onReady={onReady} />
       </Canvas>
