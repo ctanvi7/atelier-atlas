@@ -33,9 +33,9 @@ function useLand() {
         c.width = 2048;
         c.height = 1024;
         const ctx = c.getContext("2d")!;
-        ctx.fillStyle = "#eee8dc";
+        ctx.fillStyle = "#e5ddce";
         ctx.fillRect(0, 0, c.width, c.height);
-        ctx.fillStyle = "#c0ad8d";
+        ctx.fillStyle = "#b49b72";
         // Spherical clipping splits polygons at the antimeridian. Drawing raw
         // longitude segments would create a false line across Antarctica.
         const projection = geoEquirectangular()
@@ -75,7 +75,7 @@ function Pin({
   setEngaged: (engaged: boolean) => void;
 }) {
   const router = useRouter();
-  const { camera } = useThree();
+  const { camera, size } = useThree();
   const position = latLngToPosition(
     location.artists[0].lat,
     location.artists[0].lng,
@@ -83,7 +83,10 @@ function Pin({
   );
   const [visible, setVisible] = useState(false);
   const prior = useRef(false);
+  const [align, setAlign] = useState("center");
+  const priorAlign = useRef("center");
   const start = useRef([0, 0]);
+  const dragged = useRef(false);
   useFrame(() => {
     const normal = new Vector3(...position).normalize();
     const toCamera = camera.position
@@ -91,19 +94,33 @@ function Pin({
       .sub(new Vector3(...position))
       .normalize();
     const front = normal.dot(toCamera) > 0.12;
+    const screenX =
+      ((new Vector3(...position).project(camera).x + 1) * size.width) / 2;
+    const alignment =
+      screenX < 140 ? "left" : screenX > size.width - 140 ? "right" : "center";
+    if (alignment !== priorAlign.current) {
+      priorAlign.current = alignment;
+      setAlign(alignment);
+    }
     if (front !== prior.current) {
       prior.current = front;
       setVisible(front);
-      if (!front && open === index) setOpen(null);
+      if (!front) {
+        if (open === index) setOpen(null);
+        setEngaged(false);
+      }
     }
   });
   if (!visible) return null;
   return (
-    <Html position={position} center zIndexRange={[30, 0]}>
+    <Html position={position} zIndexRange={[30, 0]}>
       <div
-        className="pin-container"
+        className={`pin-container pin-align-${align} ${open === index ? "is-selected" : ""}`}
         onPointerEnter={() => setEngaged(true)}
-        onPointerLeave={() => setEngaged(false)}
+        onPointerLeave={(e) => {
+          if (!e.currentTarget.contains(document.activeElement))
+            setEngaged(false);
+        }}
         onFocus={() => setEngaged(true)}
         onBlur={(e) => {
           if (!e.currentTarget.contains(e.relatedTarget)) setEngaged(false);
@@ -117,17 +134,32 @@ function Pin({
           aria-label={`${location.artists.map((a) => a.name).join(" and ")} — ${location.city}`}
           aria-expanded={open === index}
           onPointerDown={(e) => {
+            dragged.current = false;
             start.current = [e.clientX, e.clientY];
+            e.currentTarget.setPointerCapture(e.pointerId);
             e.stopPropagation();
+          }}
+          onPointerMove={(e) => {
+            if (
+              Math.hypot(
+                e.clientX - start.current[0],
+                e.clientY - start.current[1],
+              ) > 6
+            )
+              dragged.current = true;
+          }}
+          onPointerCancel={() => {
+            dragged.current = true;
           }}
           onClick={(e) => {
             e.stopPropagation();
             if (
               e.detail === 0 ||
-              Math.hypot(
-                e.clientX - start.current[0],
-                e.clientY - start.current[1],
-              ) < 6
+              (!dragged.current &&
+                Math.hypot(
+                  e.clientX - start.current[0],
+                  e.clientY - start.current[1],
+                ) < 6)
             ) {
               if (location.artists.length === 1)
                 router.push(`/gallery/${location.artists[0].slug}`);
@@ -135,7 +167,28 @@ function Pin({
             }
           }}
         >
-          <span />
+          <svg className="pin-shape" viewBox="0 0 26 28" aria-hidden="true">
+            <path
+              d="M13 27C10 22 3 17 3 11a10 10 0 0 1 20 0c0 6-7 11-10 16Z"
+              fill="#b29051"
+              stroke="#4e3d25"
+              strokeWidth="1.4"
+            />
+            <path
+              d="M6 11a7 7 0 0 1 7-7"
+              stroke="#e4cc94"
+              strokeWidth="1.5"
+              fill="none"
+            />
+            <circle
+              cx="13"
+              cy="11"
+              r="3.2"
+              fill="#f0e3c9"
+              stroke="#6c5230"
+              strokeWidth="1"
+            />
+          </svg>
         </button>
         <div className="pin-tooltip">
           {location.artists.map((a) => a.name).join(" & ")}
@@ -176,9 +229,9 @@ function World({ paused, onReady }: { paused: boolean; onReady: () => void }) {
   const [engaged, setEngaged] = useState(false);
   return (
     <>
-      <ambientLight intensity={1.5} />
-      <directionalLight position={[3, 5, 7]} intensity={2} />
-      <directionalLight position={[-4, -2, 2]} intensity={0.35} />
+      <ambientLight intensity={0.95} />
+      <directionalLight position={[-3, 6, 7]} intensity={2.5} />
+      <directionalLight position={[5, -1, 2]} intensity={0.25} />
       <mesh rotation={[0, 0, 0]}>
         <sphereGeometry args={[2, 96, 64]} />
         <meshStandardMaterial

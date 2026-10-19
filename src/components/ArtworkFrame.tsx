@@ -9,16 +9,18 @@ export default function ArtworkFrame({
   rotation = 0,
   onSelect,
   design = "gold",
+  size,
 }: {
   work: Artwork;
   position: [number, number, number];
   rotation?: number;
   onSelect: () => void;
   design?: "gold";
+  size?: { width: number; height: number };
 }) {
   const texture = useTexture(work.image);
   texture.colorSpace = SRGBColorSpace;
-  const { width: w, height: h } = artworkSize(work);
+  const { width: w, height: h } = size ?? artworkSize(work);
   const border = 0.095;
   return (
     <group

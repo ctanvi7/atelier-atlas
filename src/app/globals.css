@@ -303,36 +303,41 @@ footer {
     11px Arial,
     sans-serif;
 }
-.map-pin {
-  padding: 10px;
-  width: 35px;
-  height: 35px;
-  border: 0;
-  border-radius: 50%;
-  background: transparent;
-  display: grid;
-  place-items: center;
-}
-.map-pin span {
-  width: 10px;
-  height: 10px;
-  background: #a5803e;
-  border: 2px solid #ead9b0;
-  border-radius: 50%;
-  box-shadow: 0 1px 5px #6e512c66;
-  transition: transform 0.2s;
-}
-.map-pin:hover span,
-.map-pin:focus-visible span {
-  transform: scale(1.5);
-}
 .pin-container {
   position: relative;
+  width: 0;
+  height: 0;
+}
+.map-pin {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  left: -22px;
+  top: -35px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  border-radius: 12px;
+  touch-action: none;
+}
+.pin-shape {
+  position: absolute;
+  width: 26px;
+  height: 28px;
+  left: 9px;
+  top: 8px;
+  filter: drop-shadow(0 2px 2px #49331845);
+  transform-origin: 50% 100%;
+  transition: filter 0.2s;
+}
+.map-pin:hover .pin-shape,
+.map-pin:focus-visible .pin-shape {
+  filter: drop-shadow(0 2px 3px #49331880);
 }
 .pin-tooltip {
   display: none;
   position: absolute;
-  bottom: 39px;
+  bottom: 40px;
   left: 50%;
   transform: translateX(-50%);
   white-space: nowrap;
@@ -354,12 +359,13 @@ footer {
   color: var(--muted);
 }
 .map-pin:hover + .pin-tooltip,
-.map-pin:focus + .pin-tooltip {
+.map-pin:focus + .pin-tooltip,
+.pin-container.is-selected .pin-tooltip {
   display: block;
 }
 .pin-selection {
   position: absolute;
-  top: 35px;
+  top: 14px;
   left: 50%;
   transform: translateX(-50%);
   background: #faf7f0;
@@ -897,4 +903,174 @@ footer {
   pointer-events: none;
   background: #f5f0e790;
   z-index: 2;
+}
+
+.entrance-introduction {
+  max-width: 680px;
+  margin: -6px auto 26px;
+  text-align: center;
+  padding: 0 24px;
+  color: var(--muted);
+}
+.entrance-introduction p {
+  font:
+    19px/1.45 "Cormorant Garamond",
+    serif;
+}
+.entrance-introduction span {
+  display: block;
+  margin-top: 10px;
+  font-size: 9px;
+  letter-spacing: 1px;
+}
+.exploration-controls {
+  max-width: 1000px;
+  margin: 20px auto 0;
+  text-align: center;
+  padding: 0 20px;
+}
+.explore-toggle {
+  font-size: 11px;
+  border-color: #b6a27e;
+  min-height: 44px;
+}
+.explore-toggle[aria-pressed="true"] {
+  background: #e8dfd0;
+}
+.exploration-controls p {
+  font-size: 10px;
+  line-height: 1.8;
+  margin: 10px auto;
+  max-width: 520px;
+  color: var(--muted);
+}
+.exploration-controls p span {
+  display: block;
+}
+.walk-pad {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+.walk-pad button {
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  font-size: 22px;
+  touch-action: none;
+  user-select: none;
+  background: #eee5d5;
+  border-radius: 50%;
+}
+.walk-pad button:active {
+  background: #d9c5a1;
+}
+.room-section canvas {
+  touch-action: none;
+}
+.room-section canvas:focus-visible {
+  outline: 2px solid #a3834c;
+  outline-offset: -3px;
+}
+.artwork-catalogue {
+  max-width: 900px;
+  margin: 28px auto;
+  padding: 0 24px;
+  color: var(--muted);
+}
+.artwork-catalogue summary {
+  cursor: pointer;
+  font-size: 11px;
+  padding: 12px 0;
+}
+.artwork-catalogue ol {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  padding: 20px;
+}
+.artwork-catalogue button {
+  display: block;
+  padding: 0;
+  border: 0;
+  font:
+    24px "Cormorant Garamond",
+    serif;
+  text-align: left;
+}
+.artwork-catalogue span {
+  display: block;
+  font-size: 10px;
+  margin: 8px 0;
+}
+.artwork-catalogue p {
+  font-size: 11px;
+  line-height: 1.7;
+}
+@media (max-width: 600px) {
+  .artwork-catalogue ol {
+    grid-template-columns: 1fr;
+  }
+  .pin-tooltip {
+    white-space: normal;
+    width: 200px;
+    font-size: 17px;
+  }
+  .entrance-introduction p {
+    font-size: 17px;
+  }
+}
+.walk-pad {
+  position: absolute;
+  z-index: 3;
+  bottom: 22px;
+  left: 22px;
+  margin: 0;
+  padding: 7px;
+  background: #f5f0e7e8;
+  border: 1px solid #cec0a8;
+  border-radius: 36px;
+}
+.walk-pad button {
+  width: 44px;
+  height: 44px;
+}
+.walking-hint {
+  bottom: auto;
+  top: 48px;
+  color: #6e604e;
+  text-shadow: none;
+}
+.pin-align-left .pin-tooltip,
+.pin-align-left .pin-selection {
+  left: -18px;
+  transform: none;
+}
+.pin-align-right .pin-tooltip,
+.pin-align-right .pin-selection {
+  left: auto;
+  right: -18px;
+  transform: none;
+}
+@media (max-width: 600px) {
+  .walk-pad {
+    bottom: 14px;
+    left: 14px;
+    gap: 5px;
+    padding: 6px;
+  }
+  .walking-hint {
+    top: 38px;
+    font-size: 9px;
+  }
+}
+.gallery-controls button {
+  min-height: 44px;
+  touch-action: manipulation;
+}
+.gallery-controls > button:first-child,
+.gallery-controls > button:nth-child(3) {
+  width: 44px;
+  height: 44px;
 }

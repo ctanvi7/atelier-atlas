@@ -1,5 +1,6 @@
 "use client";
 import Icon from "./Icon";
+import ActionButton from "./ActionButton";
 import type { Artwork } from "@/lib/data";
 export default function GalleryControls({
   works,
@@ -14,9 +15,9 @@ export default function GalleryControls({
 }) {
   return (
     <div className="gallery-controls">
-      <button
+      <ActionButton
         aria-label="Previous artwork"
-        onClick={() =>
+        onActivate={() =>
           onSelect(
             selected === null
               ? works.length - 1
@@ -25,7 +26,7 @@ export default function GalleryControls({
         }
       >
         ←
-      </button>
+      </ActionButton>
       <div className="current-work" aria-live="polite">
         <span className="eyebrow">
           {selected === null
@@ -38,24 +39,24 @@ export default function GalleryControls({
             : works[selected].title}
         </span>
       </div>
-      <button
+      <ActionButton
         aria-label="Next artwork"
-        onClick={() =>
+        onActivate={() =>
           onSelect(selected === null ? 0 : (selected + 1) % works.length)
         }
       >
         →
-      </button>
+      </ActionButton>
       <span className="control-divider" />
-      <button
+      <ActionButton
         className="inspect-button"
-        onClick={() => onInspect(selected ?? 0)}
+        onActivate={() => onInspect(selected ?? 0)}
       >
         View artwork <Icon />
-      </button>
-      <button className="reset-button" onClick={() => onSelect(null)}>
+      </ActionButton>
+      <ActionButton className="reset-button" onActivate={() => onSelect(null)}>
         Reset view
-      </button>
+      </ActionButton>
     </div>
   );
 }

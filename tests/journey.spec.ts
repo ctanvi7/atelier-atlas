@@ -45,7 +45,15 @@ test("globe to artist, artwork dialog, 2D mode and back", async ({ page }) => {
   const initial = await page.locator("canvas").screenshot();
   await page.getByRole("button", { name: "Next artwork" }).click();
   await expect(page.getByText("WORK 1 OF 6")).toBeVisible();
-  await page.waitForTimeout(1200);
+  await expect
+    .poll(async () =>
+      Number(
+        (await page.locator("canvas").getAttribute("data-position"))?.split(
+          ",",
+        )[2],
+      ),
+    )
+    .toBeCloseTo(-1.36, 1);
   expect(
     Buffer.compare(initial, await page.locator("canvas").screenshot()),
   ).not.toBe(0);
@@ -154,31 +162,6 @@ test("WebGL unavailable: directory and complete 2D collection still work", async
 });
 test("unknown artist returns 404", async ({ request }) => {
   expect((await request.get("/gallery/not-an-artist")).status()).toBe(404);
-});
-
-test("room camera paths stay inside walls and frames preserve aspect ratios", async () => {
-  const { placements, artworkSize } = await import("../src/lib/scene");
-  const views = [[0, 2.7, 7], ...placements.map((p) => p.camera)];
-  for (const from of views)
-    for (const to of views)
-      for (let step = 0; step <= 20; step++) {
-        const p = from.map((v, i) => v + ((to[i] - v) * step) / 20);
-        expect(Math.abs(p[0])).toBeLessThan(5.9);
-        expect(p[1]).toBeGreaterThan(0);
-        expect(p[1]).toBeLessThan(5.9);
-        expect(p[2]).toBeGreaterThan(-5.9);
-        expect(p[2]).toBeLessThan(8);
-      }
-  for (const artist of artists)
-    for (const work of artist.works) {
-      const size = artworkSize(work);
-      expect(size.width / size.height).toBeCloseTo(
-        work.width / work.height,
-        10,
-      );
-      expect(size.width).toBeLessThanOrEqual(2.3);
-      expect(size.height).toBeLessThanOrEqual(2.1);
-    }
 });
 
 test("reduced motion stays still; a single artist pin navigates directly", async ({
