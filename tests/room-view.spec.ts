@@ -6,7 +6,7 @@ for (const width of [1440, 390]) {
     await page.route("https://open.spotify.com/embed/**", (route) =>
       route.fulfill({
         contentType: "text/html",
-        body: "<button>Play</button>",
+        body: `<button onclick="this.textContent='Pause'">Play</button>`,
       }),
     );
     await page.goto("/gallery/elia-monroe");
@@ -21,9 +21,20 @@ for (const width of [1440, 390]) {
     ).toHaveCount(1);
     const room = page.locator(".room-section");
     await expect(room.locator("iframe")).toBeVisible();
+    await expect(room.locator("iframe")).toHaveAttribute("height", "152");
+    await expect(room.locator("iframe")).not.toHaveAttribute("src", /autoplay/);
+    const nativePlay = page
+      .frameLocator("iframe")
+      .getByRole("button", { name: "Play", exact: true });
+    await nativePlay.click();
+    await expect(
+      page
+        .frameLocator("iframe")
+        .getByRole("button", { name: "Pause", exact: true }),
+    ).toBeVisible();
     await room.getByRole("button", { name: "Stop music" }).click();
     await expect(room.locator("iframe")).toHaveCount(0);
-    await room.getByRole("button", { name: "Listen on Spotify" }).click();
+    await room.getByRole("button", { name: "Open Spotify player" }).click();
     await expect(room.locator("iframe")).toBeVisible();
     const reset = page.getByRole("button", { name: "Reset view" });
     await expect(reset).toBeInViewport();

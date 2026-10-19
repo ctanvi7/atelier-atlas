@@ -121,12 +121,12 @@ test("mobile press-and-hold, swipe-look and release stop, with reduced motion", 
   const before = await canvas.getAttribute("data-rotation");
   await cdp.send("Input.dispatchTouchEvent", {
     type: "touchStart",
-    touchPoints: [{ x: rect.x + 180, y: rect.y + 220 }],
+    touchPoints: [{ x: rect.x + 20, y: rect.y + 220 }],
   });
   for (let i = 1; i <= 5; i++)
     await cdp.send("Input.dispatchTouchEvent", {
       type: "touchMove",
-      touchPoints: [{ x: rect.x + 180 + i * 15, y: rect.y + 220 }],
+      touchPoints: [{ x: rect.x + 20 + i * 8, y: rect.y + 220 }],
     });
   await cdp.send("Input.dispatchTouchEvent", {
     type: "touchEnd",
@@ -150,6 +150,7 @@ test("mobile press-and-hold, swipe-look and release stop, with reduced motion", 
   await page.getByRole("button", { name: "Next artwork" }).tap();
   await page.getByRole("button", { name: "Walk through the gallery" }).tap();
   await canvas.scrollIntoViewIfNeeded();
+  await page.getByRole("button", { name: "Stop music" }).tap();
   const artworkView = (await canvas.boundingBox())!;
   await page.touchscreen.tap(
     artworkView.x + artworkView.width / 2,

@@ -1599,3 +1599,21 @@ footer {
   font-size: 11px;
   color: var(--muted);
 }
+/* Spotify's native playlist controls need its supported compact dimensions. */
+.room-section .music-compact {
+  width: 320px;
+  max-width: calc(100% - 24px);
+}
+.music-compact .music-note {
+  display: block;
+  margin: 8px 0 0;
+  font-size: 10px;
+  line-height: 1.5;
+}
+.music-compact .music-note a {
+  display: inline-block;
+  min-height: 24px;
+}
+.music-compact .music-credit {
+  font-size: 14px;
+}
