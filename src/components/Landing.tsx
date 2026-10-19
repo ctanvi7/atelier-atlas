@@ -3,7 +3,8 @@ import Icon from "./Icon";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useState } from "react";
-import { artists } from "@/lib/data";
+import { artists as featuredArtists, galleryHref } from "@/lib/data";
+import { useLocalGalleries } from "./useLocalGalleries";
 import SceneBoundary from "./SceneBoundary";
 import { useWebGL } from "./useMotion";
 const Globe = dynamic(() => import("./Globe"), {
@@ -14,6 +15,8 @@ const Globe = dynamic(() => import("./Globe"), {
 });
 export default function Landing() {
   const gl = useWebGL();
+  const { galleries, error } = useLocalGalleries();
+  const artists = [...featuredArtists, ...galleries];
   const [paused, setPaused] = useState(false);
   return (
     <main className="landing">
@@ -28,7 +31,7 @@ export default function Landing() {
           </summary>
           <nav aria-label="Choose an artist">
             {artists.map((artist) => (
-              <Link key={artist.slug} href={`/gallery/${artist.slug}`}>
+              <Link key={artist.slug} href={galleryHref(artist)}>
                 {artist.name}
                 <small>{artist.city}</small>
               </Link>
@@ -71,7 +74,7 @@ export default function Landing() {
                 <small>3D is unavailable on this device.</small>
               </div>
             ) : gl === true ? (
-              <Globe paused={paused} />
+              <Globe paused={paused} artists={artists} />
             ) : (
               <div className="scene-message">Preparing your atlas…</div>
             )}
@@ -102,9 +105,16 @@ export default function Landing() {
           </button>
         )}
       </section>
+      <div className="join-atlas">
+        <Link className="studio-primary" href="/studio">
+          Add your pin & artwork
+        </Link>
+        <p>Make a place for your art on the atlas.</p>
+        {error && <p role="status">{error}</p>}
+      </div>
       <footer>
         <span className="footer-logo">Atelier Atlas</span>
-        <Link href="/studio">Artist studio</Link>
+        <Link href="/studio">Create your gallery</Link>
         <a href="/ATTRIBUTION.txt">Credits & image licences</a>
       </footer>
     </main>

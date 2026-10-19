@@ -50,7 +50,7 @@ export default function ArtworkDetails({
         />
       </div>
       <div className="detail-copy">
-        <p className="eyebrow">{artist.city} · DEMONSTRATION COLLECTION</p>
+        <p className="eyebrow">{artist.city} · THE COLLECTION</p>
         <h2 id="art-title">{work.title}</h2>
         <p className="detail-artist">{artist.name}</p>
         <p>{work.description}</p>

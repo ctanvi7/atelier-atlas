@@ -1,74 +1,34 @@
 "use client";
-import { useEffect, useState } from "react";
-import type { Artist } from "@/lib/data";
-import { readDraft } from "@/lib/studio";
+import Link from "next/link";
+import { useLocalGalleries } from "./useLocalGalleries";
 import Gallery from "./Gallery";
-
-export default function SavedGallery({ artist }: { artist: Artist }) {
-  const [state, setState] = useState<{
-    artist: Artist;
-    revision: number;
-    local: boolean;
-    error: string;
-  }>();
-  useEffect(() => {
-    let active = true;
-    let generation = 0;
-    const refresh = async () => {
-      const current = ++generation;
-      try {
-        const draft = await readDraft(artist.slug);
-        if (active && current === generation)
-          setState({
-            artist: draft ? { ...artist, ...draft } : artist,
-            revision: current,
-            local: !!draft,
-            error: "",
-          });
-      } catch {
-        if (active && current === generation)
-          setState({
-            artist,
-            revision: current,
-            local: false,
-            error:
-              "Browser drafts could not be loaded. Showing the sample collection.",
-          });
-      }
-    };
-    void refresh();
-    const channel =
-      typeof BroadcastChannel !== "undefined"
-        ? new BroadcastChannel("atelier-studio")
-        : null;
-    if (channel)
-      channel.onmessage = (event) => {
-        if (event.data === artist.slug) void refresh();
-      };
-    return () => {
-      active = false;
-      channel?.close();
-    };
-  }, [artist]);
-  if (!state)
+export default function SavedGallery({ slug }: { slug: string }) {
+  const { galleries, ready, error, revision } = useLocalGalleries();
+  if (!ready)
     return (
       <p className="gallery-loading" role="status">
-        Opening the collection…
+        Opening your gallery…
       </p>
+    );
+  const artist = galleries.find((a) => a.slug === slug);
+  if (error || !artist)
+    return (
+      <main className="studio-page">
+        <h1>Your local gallery</h1>
+        <p>
+          {error ||
+            "This gallery isn’t saved in this browser. Local gallery links do not transfer uploads between devices."}
+        </p>
+        <Link href="/studio">Create your gallery</Link>
+        <p>
+          <Link href="/">Back to globe</Link>
+        </p>
+      </main>
     );
   return (
     <>
-      {state.error && (
-        <p className="draft-notice" role="status">
-          {state.error}
-        </p>
-      )}
-      {state.local && (
-        <p className="draft-notice">
-          Local studio preview · saved in this browser only
-        </p>
-      )}
-      <Gallery key={state.revision} artist={state.artist} />
+      <p className="draft-notice">Your gallery · saved in this browser only</p>
+      <Gallery key={revision} artist={artist} />
     </>
   );
 }

@@ -1,17 +1,32 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useState, type ChangeEvent } from "react";
-import { artists, type Artist, type Artwork } from "@/lib/data";
-import { artworkFromFile, readDraft, saveDraft } from "@/lib/studio";
+import { galleryHref, type Artist, type Artwork } from "@/lib/data";
+import { artworkFromFile, saveGallery } from "@/lib/studio";
 import { spotifyPlaylist } from "@/lib/spotify";
 import GalleryMusic from "./GalleryMusic";
 import Icon from "./Icon";
+import LocationPicker from "./LocationPicker";
+import { useLocalGalleries } from "./useLocalGalleries";
+const blankArtist: Artist = {
+  slug: "new",
+  name: "",
+  city: "",
+  country: "",
+  lat: NaN,
+  lng: NaN,
+  discipline: "",
+  bio: "",
+  spotifyPlaylistUrl: "",
+  works: [],
+};
 
 export default function ArtistStudio() {
-  const [slug, setSlug] = useState(artists[0].slug);
+  const [selected, setSelected] = useState<Artist>(blankArtist);
+  const { galleries, ready, error } = useLocalGalleries();
   const [dirty, setDirty] = useState(false);
   const [busy, setBusy] = useState(false);
-  const artist = artists.find((a) => a.slug === slug)!;
+  const artist = selected;
   useEffect(() => {
     const warn = (event: BeforeUnloadEvent) => {
       if (dirty) {
@@ -47,44 +62,57 @@ export default function ArtistStudio() {
       </nav>
       <header className="studio-heading">
         <p className="eyebrow">YOUR OWN CORNER OF THE WORLD</p>
-        <h1>Artist studio</h1>
-        <p>Hang a new piece. Set the mood. Make the room yours.</p>
+        <h1>Create your gallery</h1>
+        <p>Add your pin. Share your art. Tell your story.</p>
       </header>
       <aside className="studio-local-note">
         <strong>A private rehearsal.</strong> Uploads and playlists are saved in
         this browser only. They are not published or synced to other devices.
         Clearing site data removes your drafts. Keep your original images.
       </aside>
+      {error && (
+        <p className="studio-error" role="alert">
+          {error}
+        </p>
+      )}
       <div className="studio-artist-picker">
-        <label htmlFor="studio-artist">Choose a sample artist</label>
+        <label htmlFor="studio-artist">Your galleries in this browser</label>
         <select
           id="studio-artist"
-          value={slug}
-          disabled={busy}
+          value={selected.slug}
+          disabled={busy || !ready}
           onChange={(event) => {
             if (leave()) {
               setDirty(false);
-              setSlug(event.target.value);
+              setSelected(
+                galleries.find((a) => a.slug === event.target.value) ??
+                  blankArtist,
+              );
             }
           }}
         >
-          {artists.map((a) => (
+          <option value="new">Create a new gallery</option>
+          {galleries.map((a) => (
             <option key={a.slug} value={a.slug}>
               {a.name} — {a.city}
             </option>
           ))}
         </select>
-        <Link
-          href={`/gallery/${slug}`}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          View saved gallery <Icon />
-        </Link>
+        {selected.slug !== "new" && (
+          <Link
+            href={galleryHref(selected)}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            View saved gallery <Icon />
+          </Link>
+        )}
       </div>
       <StudioEditor
-        key={slug}
+        key={selected.slug}
         artist={artist}
+        ready={ready && !error}
+        onSaved={setSelected}
         dirty={dirty}
         onDirty={setDirty}
         onBusy={setBusy}
@@ -98,39 +126,32 @@ function StudioEditor({
   dirty,
   onDirty,
   onBusy,
+  ready,
+  onSaved,
 }: {
   artist: Artist;
+  ready: boolean;
+  onSaved: (artist: Artist) => void;
   dirty: boolean;
   onDirty: (dirty: boolean) => void;
   onBusy: (busy: boolean) => void;
 }) {
   const [works, setWorks] = useState<Artwork[]>(artist.works);
   const [playlist, setPlaylist] = useState(artist.spotifyPlaylistUrl ?? "");
-  const [ready, setReady] = useState(false);
+  const [profile, setProfile] = useState(artist);
+  const [lat, setLat] = useState(
+    Number.isFinite(artist.lat) ? String(artist.lat) : "",
+  );
+  const [lng, setLng] = useState(
+    Number.isFinite(artist.lng) ? String(artist.lng) : "",
+  );
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const [message, setMessage] = useState("");
-  useEffect(() => {
-    let active = true;
-    readDraft(artist.slug)
-      .then((draft) => {
-        if (!active) return;
-        if (draft) {
-          setWorks(draft.works);
-          setPlaylist(draft.spotifyPlaylistUrl);
-        }
-        setReady(true);
-      })
-      .catch((e) => {
-        if (active)
-          setError(
-            e instanceof Error ? e.message : "Could not load your saved draft.",
-          );
-      });
-    return () => {
-      active = false;
-    };
-  }, [artist]);
+  const [message, setMessage] = useState(
+    artist.slug !== "new"
+      ? "Saved in this browser. Your pin and gallery are ready."
+      : "",
+  );
   const change = () => {
     onDirty(true);
     setMessage("");
@@ -210,15 +231,30 @@ function StudioEditor({
             medium: work.medium.trim(),
             description: work.description.trim(),
           }));
-          await saveDraft(artist.slug, {
-            version: 1,
+          if (lat === "" || lng === "")
+            throw new Error("Choose a location for your pin.");
+          const collection: Artist = {
+            ...profile,
+            slug:
+              artist.slug === "new"
+                ? `local-${crypto.randomUUID()}`
+                : artist.slug,
+            name: profile.name.trim(),
+            city: profile.city.trim(),
+            country: profile.country.trim(),
+            bio: profile.bio.trim(),
+            discipline: profile.discipline.trim(),
+            lat: Number(lat),
+            lng: Number(lng),
             works: saved,
             spotifyPlaylistUrl: normalized?.url ?? "",
-          });
+          };
+          await saveGallery(collection);
           setWorks(saved);
           setPlaylist(normalized?.url ?? "");
           onDirty(false);
-          setMessage("Saved in this browser. Your gallery preview is ready.");
+          setMessage("Saved in this browser. Your pin and gallery are ready.");
+          onSaved(collection);
         } catch (e) {
           setError(
             e instanceof Error ? e.message : "Could not save your collection.",
@@ -237,10 +273,58 @@ function StudioEditor({
         {message || (!ready && !error ? "Loading your studio…" : "")}
       </p>
       <fieldset disabled={!ready || busy}>
+        <section className="studio-section studio-profile">
+          <p className="eyebrow">01 / YOUR PLACE ON THE ATLAS</p>
+          <h2>Add your pin</h2>
+          <div className="profile-grid">
+            {(
+              [
+                ["name", "Your artist name"],
+                ["city", "City"],
+                ["country", "Country"],
+                ["discipline", "Art practice"],
+              ] as const
+            ).map(([field, label]) => (
+              <div key={field}>
+                <label htmlFor={`profile-${field}`}>{label}</label>
+                <input
+                  id={`profile-${field}`}
+                  required={field !== "discipline"}
+                  maxLength={field === "discipline" ? 160 : 100}
+                  value={profile[field]}
+                  onChange={(e) => {
+                    setProfile({ ...profile, [field]: e.target.value });
+                    change();
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+          <label htmlFor="profile-bio">About you and your art</label>
+          <textarea
+            id="profile-bio"
+            rows={3}
+            maxLength={1500}
+            value={profile.bio}
+            onChange={(e) => {
+              setProfile({ ...profile, bio: e.target.value });
+              change();
+            }}
+          />
+          <LocationPicker
+            lat={lat}
+            lng={lng}
+            onChange={(latitude, longitude) => {
+              setLat(latitude);
+              setLng(longitude);
+              change();
+            }}
+          />
+        </section>
         <section className="studio-section">
           <div className="studio-section-heading">
             <div>
-              <p className="eyebrow">01 / THE COLLECTION</p>
+              <p className="eyebrow">02 / YOUR ARTWORK</p>
               <h2>On your walls</h2>
             </div>
             <p>
@@ -350,7 +434,7 @@ function StudioEditor({
           </div>
         </section>
         <section className="studio-section studio-music">
-          <p className="eyebrow">02 / THE ATMOSPHERE</p>
+          <p className="eyebrow">03 / THE ATMOSPHERE</p>
           <h2>Your room, your soundtrack</h2>
           <label htmlFor="studio-playlist">Spotify playlist link</label>
           <input
@@ -369,7 +453,7 @@ function StudioEditor({
           </p>
           <GalleryMusic
             key={playlist}
-            artistName={artist.name}
+            artistName={profile.name || "You"}
             playlistUrl={playlist.trim()}
           />
         </section>
@@ -377,10 +461,12 @@ function StudioEditor({
           <p>
             {dirty
               ? "You have unsaved changes."
-              : "Your collection is up to date."}
+              : artist.slug === "new"
+                ? "Add a pin and at least one artwork to begin."
+                : "Your collection is up to date."}
           </p>
           <button className="studio-primary" type="submit">
-            {busy ? "Working…" : "Save to this browser"}
+            {busy ? "Working…" : "Save pin & gallery"}
           </button>
         </div>
       </fieldset>
